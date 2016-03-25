@@ -52,6 +52,10 @@ function map(map, tileset){
         return this.tileData[(y * this.mapW) + x].hit;
     }
 
+    this.getTile = function(x, y){
+        return this.tileData[(y * this.mapW) + x];
+    }
+
     this.getTileScreenPos = function(x, y){
         var result = {};
 
@@ -89,6 +93,7 @@ function map(map, tileset){
             var obj = map.objects[i];
             if(obj instanceof gameobject){
                 this.objects.push(obj);
+                window.objectsVisible.push(obj);
             }
         }
 

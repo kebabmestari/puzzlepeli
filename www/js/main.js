@@ -20,17 +20,23 @@ var gameArea = {
         CTX.textAlign = "center";
         CTX.strokeText("Hello", this.canvas.getAttribute("width")/2, this.canvas.getAttribute("height")/2);
 
-        player = new gameObject('pelaaja', 0, 0, 'black', '@', 'pelaajakuva');
+        player = new playerObj(2,2);
         player.setAnimation(new animation('plranim', 25, 25, 2, 1000));
         currentMap = new map(map1, tiluset);
         player.setPosition(2,2);
 
         this.attachEvents();
 
+        var boks = new box(3,3);
+        var boks2 = new box(4,4);
+        currentMap.objects.push(boks);
+        currentMap.objects.push(boks2);
+
         gameArea.update();
     },
     attachEvents: function(){
         window.addEventListener('keydown', handleKeys);
+        swipeDetect(window, handleSwipe);
     },
     clear : function(){
         CTX.fillStyle = "white";
@@ -38,10 +44,19 @@ var gameArea = {
     },
     drawEverything : function(){
         if(currentMap) currentMap.drawMap();
+        var l = currentMap.objects.length;
+        for(var i = 0; i < l; i++){
+            currentMap.objects[i].drawObject();
+        }
         if(player) player.drawObject();
     },
     update : function(){
         player.updateMovement();
+        var l = currentMap.objects.length;
+        for(var i = 0; i < l; i++){
+            currentMap.objects[i].updateMovement();
+        }
+
         gameArea.drawEverything();
         requestAnimationFrame(gameArea.update);
     }
