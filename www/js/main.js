@@ -43,18 +43,31 @@ var gameArea = {
         CTX.fillRect(0, 0, this.width, this.height);
     },
     drawEverything : function(){
-        if(currentMap) currentMap.drawMap();
-        var l = currentMap.objects.length;
-        for(var i = 0; i < l; i++){
-            currentMap.objects[i].drawObject();
+        this.clear();
+        if(currentMap) {
+            currentMap.drawMap();
+            var l = currentMap.objects.length;
+            for (var i = 0; i < l; i++) {
+                currentMap.objects[i].drawObject();
+            }
+            if (player) player.drawObject();
+            if((currentMap.mapW * currentMap.tileset.tileW) > this.canvas.width ||
+                (currentMap.mapH * currentMap.tileset.tileH) > this.canvas.height) {
+                camera.lockOnPlayer();
+                camera.checkMapBoundaries();
+            }
         }
-        if(player) player.drawObject();
+        if(!currentMap && editMode){
+            mapEditor.drawEditor();
+        }
     },
     update : function(){
         player.updateMovement();
-        var l = currentMap.objects.length;
-        for(var i = 0; i < l; i++){
-            currentMap.objects[i].updateMovement();
+        if(currentMap) {
+            var l = currentMap.objects.length;
+            for (var i = 0; i < l; i++) {
+                currentMap.objects[i].updateMovement();
+            }
         }
 
         gameArea.drawEverything();

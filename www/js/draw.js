@@ -4,15 +4,17 @@
 
 "use strict";
 
+var CAMERASPEED = 25;
+
 var draw = {
     drawRect : function(color, x, y, w, h, filled){
         CTX.fillStyle   = color;
         CTX.strokeStyle = color;
         filled = filled || 'false';
         if(filled){
-            CTX.fillRect(x, y, w, h);
+            CTX.fillRect(x - camera.x, y - camera.y, w, h);
         }else{
-            CTX.strokeRect(x, y, w, h);
+            CTX.strokeRect(x - camera.x, y - camera.y, w, h);
         }
     },
     drawCenteredText : function(text){
@@ -31,7 +33,8 @@ var draw = {
     },
     drawTile : function(tileset, tile, x, y){
         CTX.drawImage(tileset.getImage(), tileset.tiles[tile].x, tileset.tiles[tile].y,
-            tileset.tiles[tile].w, tileset.tiles[tile].h, x, y, tileset.tiles[tile].w, tileset.tiles[tile].h);
+            tileset.tiles[tile].w, tileset.tiles[tile].h,
+            x - camera.x, y - camera.y, tileset.tiles[tile].w, tileset.tiles[tile].h);
     },
     drawObject : function(img, x, y, animation, frame){
         var d_x = 0, d_y = 0, d_w = img.imgW, d_h = img.imgH;
@@ -41,6 +44,24 @@ var draw = {
             d_w = animation.frameW;
             d_h = animation.frameH;
         }
-        CTX.drawImage(img, d_x, d_y, d_w, d_h, x, y, d_w, d_h);
+        CTX.drawImage(img, d_x, d_y, d_w, d_h, x - camera.x, y - camera.y, d_w, d_h);
+    }
+};
+
+//The game view camera
+var camera = {
+    x: 0,
+    y: 0,
+    checkMapBoundaries: function() {
+        if (this.x < currentMap.offsetX) this.x = currentMap.offsetX;
+        if (this.y < currentMap.offsetY) this.y = currentMap.offsetY;
+        if ((this.x + gameArea.canvas.width) > (currentMap.offsetX + currentMap.mapW * currentMap.tileset.tileW))
+            this.x = (currentMap.offsetX + currentMap.mapW * currentMap.tileset.tileW) - gameArea.canvas.width;
+        if ((this.y + gameArea.canvas.height) > (currentMap.offsetY + currentMap.mapH * currentMap.tileset.tileH))
+            this.y = (currentMap.offsetY + currentMap.mapH * currentMap.tileset.tileH) - gameArea.canvas.height;
+    },
+    lockOnPlayer: function(){
+        this.x = -(currentMap.offsetX + player.x * currentMap.tileset.tileW + currentMap.tileset.tileW / 2)/2;
+        this.y = -(currentMap.offsetY + player.y * currentMap.tileset.tileH + currentMap.tileset.tileH / 2)/2;
     }
 };

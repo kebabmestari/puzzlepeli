@@ -4,7 +4,12 @@ var keyScheme = {
 	LEFT: 	37,
 	UP:		38,
 	RIGHT:  39,
-	DOWN:   40
+	DOWN:   40,
+    EDIT:   69,
+    ADDROW: 103,
+    DELETEROW: 100,
+    ADDCOL: 105,
+    DELETECOL: 102
 };
 
 function handleKeys(event){
@@ -17,14 +22,46 @@ function handleKeys(event){
       keynum = event.which;
     }
 
-    if(keynum === keyScheme.LEFT)
-    	movePlayer('left');
-    else if(keynum === keyScheme.UP)
-    	movePlayer('up');
-    else if(keynum === keyScheme.RIGHT)
-    	movePlayer('right');
-    else if(keynum === keyScheme.DOWN)
-    	movePlayer('down');
+    if(keynum === keyScheme.LEFT) {
+        if(!editMode)
+            movePlayer('left');
+        else
+            camera.x -= CAMERASPEED;
+    }
+    else if(keynum === keyScheme.UP) {
+        if(!editMode)
+            movePlayer('up');
+        else
+            camera.y -= CAMERASPEED;
+    }
+    else if(keynum === keyScheme.RIGHT) {
+        if(!editMode)
+            movePlayer('right');
+        else
+            camera.x += CAMERASPEED;
+    }
+    else if(keynum === keyScheme.DOWN) {
+        if(!editMode)
+            movePlayer('down');
+        else
+            camera.y += CAMERASPEED;
+    }
+    else if(keynum == keyScheme.EDIT){
+        currentMap = null;
+        initEditor();
+    }
+    else if(keynum == keyScheme.ADDROW && editMode){
+        mapEditor.addRow();
+    }
+    else if(keynum == keyScheme.DELETEROW && editMode){
+        mapEditor.deleteRow();
+    }
+    else if(keynum == keyScheme.ADDCOL && editMode){
+        mapEditor.addCol();
+    }
+    else if(keynum == keyScheme.DELETECOL && editMode){
+        mapEditor.deleteCol();
+    }
 
 	console.log('Key ' + keynum + ' pressed');
 }

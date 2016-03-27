@@ -17,7 +17,7 @@ var TILETYPE = {
 *   Map constructor
 *
 */
-function map(map, tileset){
+function map(map){
 
     this.name = map.name;
     this.tileset = null;
@@ -31,6 +31,9 @@ function map(map, tileset){
     this.mapW = 0;
     this.mapH = 0;
 
+    //Which tile is highlighted
+    this.highlight = null;
+
     this.getMapOffsetX = function() {
         return this.mapOffSetX;
     }
@@ -42,9 +45,12 @@ function map(map, tileset){
         var l = this.tileData.length;
         for(var i = 0; i < l; i++){
             var temp_tile = this.tileData[i];
-            draw.drawTile(this.tileset, temp_tile.type,
-                this.offsetX + temp_tile.x * this.tileset.tileW,
-                this.offsetY + temp_tile.y * this.tileset.tileH);
+            var x = this.offsetX + temp_tile.x * this.tileset.tileW;
+            var y = this.offsetY + temp_tile.y * this.tileset.tileH;
+            draw.drawTile(this.tileset, temp_tile.type, x, y);
+            if(this.highlight === temp_tile) {
+                draw.drawRect('red', x, y, this.tileset.tileW, this.tileset.tileH, false);
+            }
         }
     }
 
@@ -175,12 +181,22 @@ function tileRect(x, y, w, h){
 var kebab = document.getElementById('testitileset');
 tiluset = new tileset(kebab, 25, 25);
 
+var defaultTileset = tiluset;
+
+function mapData(name, tileset, tiles, hitmap, plrstart, objects){
+    this.name = name || 'unnamed';
+    this.tileset = tileset || window.defaultTileset;
+    this.tiles = tiles || [];
+    this.hitmap = hitmap || [];
+    this.plrstart = plrstart || [0,0];
+    this.objects = objects || [];
+}
+
 //Test map please ignore
-var map1 = {
-name: 'testi',
-tileset: tiluset,
-size: [8, 8],
-tiles: [
+var map1 = new mapData(
+'testi',
+tiluset,
+[
 [0,0,0,0,0,0,0,0],
 [0,1,1,1,1,1,1,0],
 [0,1,0,0,0,0,1,0],
@@ -190,7 +206,7 @@ tiles: [
 [0,1,1,1,1,1,1,0],
 [0,0,0,0,0,0,0,0]
 ],
-hitmap: [
+    [
 [0,0,0,0,0,0,0,0],
 [0,1,1,1,1,1,1,0],
 [0,1,0,0,0,0,1,0],
@@ -200,7 +216,6 @@ hitmap: [
 [0,1,1,1,1,1,1,0],
 [0,0,0,0,0,0,0,0]
 ],
-plrstart: [2,2],
-boxes: [[4,4]],
-objects : []
-};
+[2,2],
+[]
+);
