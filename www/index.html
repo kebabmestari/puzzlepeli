@@ -26,7 +26,7 @@
         <meta name="msapplication-tap-highlight" content="no" />
         <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
         <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
-        <link rel="stylesheet" href="css/index.css">
+        <link rel="stylesheet" href="css/style.css">
 
 <!--         Include the jQuery library
 <script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
@@ -44,23 +44,15 @@ Include the jQuery Mobile library
 
         <title>Hello World</title>
 
-        <style>
-            #imgload{
-                display: none;
-            }
-            #gamearea{
-                display: flex;
-                flex-flow: row nowrap;
-                justify-content: center;
-            }
-        </style>
-
     </head>
     <body>
         <div class="content">
             <h1>Mobiilipeli</h1>
-            <div id="gamearea">
-                <noscript><h3>Enable Javascript plz</h3></noscript>
+            <div id="gameareacontainer">
+                <div id="gamearea">
+                    <noscript><h3>Enable Javascript plz</h3></noscript>
+                    <div id="info" style="display:none"><p></p></div>
+                </div>
             </div>
         </div>
         <div id="imgload">

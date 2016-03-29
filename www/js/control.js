@@ -9,7 +9,9 @@ var keyScheme = {
     ADDROW: 103,
     DELETEROW: 100,
     ADDCOL: 105,
-    DELETECOL: 102
+    DELETECOL: 102,
+    NEXTITEM: 107,
+    PREVITEM: 109
 };
 
 function handleKeys(event){
@@ -61,6 +63,15 @@ function handleKeys(event){
     }
     else if(keynum == keyScheme.DELETECOL && editMode){
         mapEditor.deleteCol();
+    }
+    else if(keynum == keyScheme.NEXTITEM && editMode){
+        mapEditor.scrollItems(1);
+    }
+    else if(keynum == keyScheme.PREVITEM && editMode){
+        mapEditor.scrollItems(-1);
+    }
+    else if(keynum >= 49 && keynum <= 57 && editMode){
+        mapEditor.selectItem(keynum - 49);
     }
 
 	console.log('Key ' + keynum + ' pressed');
@@ -133,4 +144,22 @@ function swipeDetect(el, callback){
         handleswipe(swipedir);
         e.preventDefault();
     }, false);
+}
+
+//Return mouse position on canvas
+function getMousePosScreen(canvas, evt) {
+    var rect = canvas.getBoundingClientRect();
+    return {
+        x: evt.clientX - rect.left,
+        y: evt.clientY - rect.top
+    };
+}
+
+//Return mouse position on canvas
+function getMousePosWorld(canvas, evt) {
+    var rect = canvas.getBoundingClientRect();
+    return {
+        x: evt.clientX - rect.left + camera.x,
+        y: evt.clientY - rect.top + camera.y
+    };
 }

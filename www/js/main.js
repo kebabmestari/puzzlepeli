@@ -37,6 +37,18 @@ var gameArea = {
     attachEvents: function(){
         window.addEventListener('keydown', handleKeys);
         swipeDetect(window, handleSwipe);
+
+        this.canvas.ondragstart = function(e) {
+            if (e && e.preventDefault) { e.preventDefault(); }
+            if (e && e.stopPropagation) { e.stopPropagation(); }
+            return false;
+        }
+
+        this.canvas.onselectstart = function(e) {
+            if (e && e.preventDefault) { e.preventDefault(); }
+            if (e && e.stopPropagation) { e.stopPropagation(); }
+            return false;
+        }
     },
     clear : function(){
         CTX.fillStyle = "white";

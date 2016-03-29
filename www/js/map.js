@@ -10,7 +10,8 @@ var tiluset = null;
 //Tile types
 var TILETYPE = {
     0   : 'BG',
-    1   : 'WALL'
+    1   : 'WALL',
+    2   : 'GOAL'
 };
 
 /**
@@ -27,7 +28,9 @@ function map(map){
     this.objects = [];
     this.offsetX = 0;
     this.offsetY = 0;
-
+    
+    this.playerStart = [0, 0];
+    
     this.mapW = 0;
     this.mapH = 0;
 
@@ -48,10 +51,20 @@ function map(map){
             var x = this.offsetX + temp_tile.x * this.tileset.tileW;
             var y = this.offsetY + temp_tile.y * this.tileset.tileH;
             draw.drawTile(this.tileset, temp_tile.type, x, y);
-            if(this.highlight === temp_tile) {
-                draw.drawRect('red', x, y, this.tileset.tileW, this.tileset.tileH, false);
+            if(temp_tile.highlight) {
+                draw.drawRect('yellow', x, y, this.tileset.tileW, this.tileset.tileH, false);
+                temp_tile.highlight = false;
             }
         }
+    }
+
+    this.drawChar = function(obj){
+        var pos = this.getTileScreenPos(obj.x, obj.y);
+        var posx = pos.x + obj.drawOffsetX;
+        var posy = pos.y + obj.drawOffsetY
+
+        draw.drawRect(obj.color, posx, posy, this.tileset.tileW, this.tileset.tileH, true);
+        draw.drawText('#FFF', obj.char, posx + this.tileset.tileW / 2, posy, true, true);
     }
 
     this.isHit = function(x, y){
@@ -71,9 +84,34 @@ function map(map){
         return result;
     }
 
-    this.loadObject = function(obj){
-        objects.push(JSON.parse(obj));
-        console.log("Object loaded");
+    this.addObject = function(obj){
+        var object = null;
+        if(typeof obj === 'string')
+            object = JSON.parse(obj);
+        else
+            object = obj;
+
+        for(var i = 0; i < this.objects.length; i++){
+            var tempObj = this.objects[i];
+            if(tempObj.x === object.x && tempObj.y === object.y){
+                console.log('Cannot add object over another object');
+                return;
+            }
+        }
+
+        this.objects.push(object);
+        console.log("Object added");
+    }
+
+    this.removeObjectFrom = function(x, y){
+        for(var i = 0; i < this.objects.length; i++){
+            var tempObj = this.objects[i];
+            if(tempObj.x === x && tempObj.y === y){
+                var tempIndex = this.objects.indexOf(tempObj);
+                this.objects.splice(tempIndex, 1);
+                return;
+            }
+        }
     }
 
     this.loadMap = function(map, tileset){
@@ -108,13 +146,23 @@ function map(map){
     }
 
     this.clearMap = function(){
-        objects = tileData = [];
+        this.objects = this.tileData = [];
         console.log("Map cleared");
     }
 
     this.loadMap(map, tileset);
 
 }
+
+map.prototype.getTileScreen = function(x, y){
+    var startX = (x - this.offsetX + camera.x);
+    var startY = (y - this.offsetY + camera.y);
+    if(startX < 0 || startX > this.mapW * this.tileset.tileW || startY < 0 || startY > this.mapH * this.tileset.tileH){
+        return null;
+    }
+    return this.tileData[this.mapW * (~~(startY / this.tileset.tileH)) +
+        (~~(startX / this.tileset.tileW))];
+};
 
 //Object which represents a tile in map data
 function tile(x, y, type, hit, tile){
@@ -128,6 +176,7 @@ function tile(x, y, type, hit, tile){
     this.y = y;
     this.type = type;
     this.hit = hit;
+    this.highlight = false;
 }
 
 //Tileset constructor

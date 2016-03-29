@@ -10,7 +10,6 @@ var draw = {
     drawRect : function(color, x, y, w, h, filled){
         CTX.fillStyle   = color;
         CTX.strokeStyle = color;
-        filled = filled || 'false';
         if(filled){
             CTX.fillRect(x - camera.x, y - camera.y, w, h);
         }else{
@@ -61,7 +60,7 @@ var camera = {
             this.y = (currentMap.offsetY + currentMap.mapH * currentMap.tileset.tileH) - gameArea.canvas.height;
     },
     lockOnPlayer: function(){
-        this.x = -(currentMap.offsetX + player.x * currentMap.tileset.tileW + currentMap.tileset.tileW / 2)/2;
-        this.y = -(currentMap.offsetY + player.y * currentMap.tileset.tileH + currentMap.tileset.tileH / 2)/2;
+        this.x = -(currentMap.offsetX + player.x + player.drawOffsetX * currentMap.tileset.tileW + currentMap.tileset.tileW / 2)/2;
+        this.y = -(currentMap.offsetY + player.y + player.drawOffsetY * currentMap.tileset.tileH + currentMap.tileset.tileH / 2)/2;
     }
 };
