@@ -61,10 +61,17 @@ function map(map){
     this.drawChar = function(obj){
         var pos = this.getTileScreenPos(obj.x, obj.y);
         var posx = pos.x + obj.drawOffsetX;
+<<<<<<< 91d8316978c9145167ceb71e37eb8b5d13a89929
         var posy = pos.y + obj.drawOffsetY
 
         draw.drawRect(obj.color, posx, posy, this.tileset.tileW, this.tileset.tileH, true);
         draw.drawText('#FFF', obj.char, posx + this.tileset.tileW / 2, posy, true, true);
+=======
+        var posy = pos.y + obj.drawOffsetY;
+
+        draw.drawRect(obj.color, posx, posy, this.tileset.tileW, this.tileset.tileH, true);
+        draw.drawWorldText('#FFF', obj.char, posx + this.tileset.tileW / 2, posy, true, true);
+>>>>>>> Kenttäeditorin kehittelyä, mm. asioiden lisäys toimii jotenkin
     }
 
     this.isHit = function(x, y){
@@ -246,24 +253,24 @@ var map1 = new mapData(
 'testi',
 tiluset,
 [
-[0,0,0,0,0,0,0,0],
-[0,1,1,1,1,1,1,0],
-[0,1,0,0,0,0,1,0],
-[0,1,0,0,0,0,1,0],
-[0,1,0,0,0,0,1,0],
-[0,1,0,0,0,0,1,0],
-[0,1,1,1,1,1,1,0],
-[0,0,0,0,0,0,0,0]
+[0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+[0,1,1,1,1,1,1,0,0,0,0,0,0,0],
+[0,1,0,0,0,0,0,0,0,0,0,0,0,0],
+[0,1,0,0,0,0,0,0,0,0,0,0,0,0],
+[0,1,0,0,0,0,0,0,0,0,0,0,0,0],
+[0,1,0,0,0,0,0,0,0,0,0,0,0,0],
+[0,1,1,1,1,1,1,0,0,0,0,0,0,0],
+[0,0,0,0,0,0,0,0,0,0,0,0,0,0]
 ],
     [
-[0,0,0,0,0,0,0,0],
-[0,1,1,1,1,1,1,0],
-[0,1,0,0,0,0,1,0],
-[0,1,0,0,0,0,1,0],
-[0,1,0,0,0,0,1,0],
-[0,1,0,0,0,0,1,0],
-[0,1,1,1,1,1,1,0],
-[0,0,0,0,0,0,0,0]
+        [0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+        [0,1,1,1,1,1,1,0,0,0,0,0,0,0],
+        [0,1,0,0,0,0,0,0,0,0,0,0,0,0],
+        [0,1,0,0,0,0,0,0,0,0,0,0,0,0],
+        [0,1,0,0,0,0,0,0,0,0,0,0,0,0],
+        [0,1,0,0,0,0,0,0,0,0,0,0,0,0],
+        [0,1,1,1,1,1,1,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0,0,0,0,0]
 ],
 [2,2],
 []

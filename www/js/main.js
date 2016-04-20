@@ -7,8 +7,8 @@ var player = null;
 var gameArea = {
     init : function(){
         this.canvas = document.createElement("canvas");
-        this.canvas.setAttribute("width", "300");
-        this.canvas.setAttribute("height", "200");
+        this.canvas.setAttribute("width", "640");
+        this.canvas.setAttribute("height", "480");
         this.width  = this.canvas.width;
         this.height = this.canvas.height;
         CTX = this.canvas.getContext("2d");
@@ -18,7 +18,7 @@ var gameArea = {
         gameArea.clear();
         CTX.font = "20px Helvetica, serif";
         CTX.textAlign = "center";
-        CTX.strokeText("Hello", this.canvas.getAttribute("width")/2, this.canvas.getAttribute("height")/2);
+        CTX.strokeText("Loading", this.canvas.getAttribute("width")/2, this.canvas.getAttribute("height")/2);
 
         player = new playerObj(2,2);
         player.setAnimation(new animation('plranim', 25, 25, 2, 1000));

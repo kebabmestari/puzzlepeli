@@ -30,6 +30,9 @@ var draw = {
             CTX.strokeText(text, x, y);
         }
     },
+    drawWorldText : function (color, text, x, y, fill, center) {
+        this.drawText(color, text, x - camera.x, y - camera.y, fill, center);
+    },
     drawTile : function(tileset, tile, x, y){
         CTX.drawImage(tileset.getImage(), tileset.tiles[tile].x, tileset.tiles[tile].y,
             tileset.tiles[tile].w, tileset.tiles[tile].h,
@@ -60,7 +63,14 @@ var camera = {
             this.y = (currentMap.offsetY + currentMap.mapH * currentMap.tileset.tileH) - gameArea.canvas.height;
     },
     lockOnPlayer: function(){
+<<<<<<< 91d8316978c9145167ceb71e37eb8b5d13a89929
         this.x = -(currentMap.offsetX + player.x + player.drawOffsetX * currentMap.tileset.tileW + currentMap.tileset.tileW / 2)/2;
         this.y = -(currentMap.offsetY + player.y + player.drawOffsetY * currentMap.tileset.tileH + currentMap.tileset.tileH / 2)/2;
+=======
+        var tileW = currentMap.tileset.tileW;
+        var tileH = currentMap.tileset.tileH;
+        this.x = (currentMap.offsetX + player.x * tileW + player.drawOffsetX + currentMap.tileset.tileW / 2) - gameArea.canvas.width/2;
+        this.y = (currentMap.offsetY + player.y * tileH + player.drawOffsetY + currentMap.tileset.tileH / 2) - gameArea.canvas.height/2;
+>>>>>>> Kenttäeditorin kehittelyä, mm. asioiden lisäys toimii jotenkin
     }
 };

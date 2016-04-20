@@ -24,6 +24,10 @@ function initEditor(){
         mapH: 0,
         selected: 0,
         pickedTile: null,
+<<<<<<< 91d8316978c9145167ceb71e37eb8b5d13a89929
+=======
+        mousedown: false,
+>>>>>>> Kenttäeditorin kehittelyä, mm. asioiden lisäys toimii jotenkin
         mapName: 'empty',
         newMapData: null,
         init: function(){
@@ -56,8 +60,23 @@ function initEditor(){
             editMode = true;
 
             //Add event handler
+<<<<<<< 91d8316978c9145167ceb71e37eb8b5d13a89929
             gameArea.canvas.addEventListener('mousemove', function(e){mapEditor.hoverTile.call(mapEditor, e || window.event)});
             gameArea.canvas.addEventListener('click', function(e){mapEditor.selectTile.call(mapEditor, e || window.event)});
+=======
+            gameArea.canvas.addEventListener('mousemove', function(e){
+                mapEditor.hoverTile.call(mapEditor, e || window.event)
+                if(mapEditor.mousedown){
+                    mapEditor.selectTile.call(mapEditor, e || window.event);
+                }
+            });
+            gameArea.canvas.addEventListener('mousedown', function(e){
+                mapEditor.mousedown = true;
+            });
+            window.addEventListener('mouseup', function(e){
+                mapEditor.mousedown = false;
+            });
+>>>>>>> Kenttäeditorin kehittelyä, mm. asioiden lisäys toimii jotenkin
 
             this.updateInfo();
         },
@@ -105,6 +124,7 @@ function initEditor(){
         updateMap: function(){
             newMap = new map(this.newMapData);
             this.updateInfo();
+<<<<<<< 91d8316978c9145167ceb71e37eb8b5d13a89929
         },
         updateInfo: function(){
             infoText.innerHTML = 'Selected element: ' + editorEntities[this.selected] + '\n Map width: ' +
@@ -153,6 +173,56 @@ function initEditor(){
                 }
             }
         },
+=======
+        },
+        updateInfo: function(){
+            infoText.innerHTML = 'Selected element: ' + editorEntities[this.selected] + '\n Map width: ' +
+                this.mapW + '\n Map height: ' + this.mapH;
+        },
+        hoverTile: function(e){
+            var mousepos = getMousePosScreen(gameArea.canvas, e);
+            var pickedTile = null;
+            if(pickedTile = newMap.getTileScreen(mousepos.x, mousepos.y)){
+                pickedTile.highlight = true;
+            }
+            this.pickedTile = pickedTile;
+        },
+        selectTile: function(e){
+            e.preventDefault();
+            if(!this.pickedTile)
+                return;
+            var mouseButton = e.button;
+            var selection = editorEntities[this.selected];
+            if(mouseButton === 2){
+                newMap.removeObjectFrom(this.pickedTile.x, this.pickedTile.y);
+                return false;
+            }
+            if(this.pickedTile){
+                switch(selection){
+                    case 'bg':
+                        this.pickedTile.type = 0;
+                        this.pickedTile.hit = false;
+                        break;
+                    case 'wall':
+                        this.pickedTile.type = 1;
+                        this.pickedTile.hit = true;
+                        break;
+                        break;
+                    case 'box':
+                        newMap.addObject(new box(this.pickedTile.x, this.pickedTile.y));
+                        console.log('New box added');
+                        break;
+                    case 'playerstart':
+                        newMap.playerStart = [this.pickedTile.x, this.pickedTile.y];
+                        break;
+                    case 'goal':
+                        this.pickedTile.type = 2;
+                        this.pickedTile.hit = false;
+                        break;
+                }
+            }
+        },
+>>>>>>> Kenttäeditorin kehittelyä, mm. asioiden lisäys toimii jotenkin
         scrollItems: function(dir){
             this.selected += dir;
             var max = Object.keys(editorEntities).length - 1;

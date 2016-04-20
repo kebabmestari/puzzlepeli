@@ -178,7 +178,7 @@ gameObject.prototype.drawObject = function(){
         draw.drawObject(this.img, posx, posy, this.animation, this.animationFrame);
     }else{
         draw.drawRect(this.color, posx, posy, currentMap.tileset.tileW, currentMap.tileset.tileH, true);
-        draw.drawText('#FFF', this.char, posx + currentMap.tileset.tileW / 2, posy, true, true);
+        draw.drawWorldText('#FFF', this.char, posx + currentMap.tileset.tileW / 2, posy, true, true);
     }
 }
 
