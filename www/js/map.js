@@ -28,9 +28,9 @@ function map(map){
     this.objects = [];
     this.offsetX = 0;
     this.offsetY = 0;
-    
+
     this.playerStart = [0, 0];
-    
+
     this.mapW = 0;
     this.mapH = 0;
 
@@ -61,17 +61,10 @@ function map(map){
     this.drawChar = function(obj){
         var pos = this.getTileScreenPos(obj.x, obj.y);
         var posx = pos.x + obj.drawOffsetX;
-<<<<<<< 91d8316978c9145167ceb71e37eb8b5d13a89929
-        var posy = pos.y + obj.drawOffsetY
-
-        draw.drawRect(obj.color, posx, posy, this.tileset.tileW, this.tileset.tileH, true);
-        draw.drawText('#FFF', obj.char, posx + this.tileset.tileW / 2, posy, true, true);
-=======
         var posy = pos.y + obj.drawOffsetY;
 
         draw.drawRect(obj.color, posx, posy, this.tileset.tileW, this.tileset.tileH, true);
         draw.drawWorldText('#FFF', obj.char, posx + this.tileset.tileW / 2, posy, true, true);
->>>>>>> Kenttäeditorin kehittelyä, mm. asioiden lisäys toimii jotenkin
     }
 
     this.isHit = function(x, y){
@@ -131,7 +124,7 @@ function map(map){
 
         this.mapW = map.tiles[0].length;
         this.mapH = map.tiles.length;
-        
+
         //Load tile and hit data
         for(y = 0; y < this.mapH; y++){
             for(x = 0; x < this.mapW; x++){
@@ -189,7 +182,7 @@ function tile(x, y, type, hit, tile){
 //Tileset constructor
 //Object encloses data and methods about tileset
 function tileset(img, tileW, tileH){
-    
+
     this.image = img;
 
     this.tilesX = ~~(img.width/tileW);

@@ -2,14 +2,14 @@
  * Created by Samuel on 3/23/2016.
  */
 
-"use strict";
+'use strict';
 
 //Container for all animations
 var animations = [];
 
 var OBJMOVESPEED = 5;
 
-function gameObject(name, x, y, color, char, img){
+function gameObject(name, x, y, color, char, img) {
 
     //Object name
     this.name = name;
@@ -41,7 +41,7 @@ function gameObject(name, x, y, color, char, img){
     this.moveDir = '';
 
     //Placeholder character
-    this.char = (typeof char === 'string' && char.length === 1)?char:'?';
+    this.char = (typeof char === 'string' && char.length === 1) ?char:'?';
 
     this.img = document.getElementById(img) || null;
     if(this.img){
