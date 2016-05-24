@@ -1,4 +1,5 @@
 /**
+ * This file containes methods related to drawing to the canvas
  * Created by Samuel on 3/23/2016.
  */
 
@@ -7,6 +8,7 @@
 var CAMERASPEED = 25;
 
 var draw = {
+    //Draw a rectangle
     drawRect : function(color, x, y, w, h, filled){
         CTX.fillStyle   = color;
         CTX.strokeStyle = color;
@@ -16,9 +18,11 @@ var draw = {
             CTX.strokeRect(x - camera.x, y - camera.y, w, h);
         }
     },
+    //Draw text that is centered to the canvas
     drawCenteredText : function(text){
         this.drawText(text, gameArea.width/2, gameArea.height/2, true);
     },
+    //Draw text
     drawText : function(color, text, x, y, fill, center){
         CTX.fillStyle   = color;
         CTX.strokeStyle = color;
@@ -30,14 +34,17 @@ var draw = {
             CTX.strokeText(text, x, y);
         }
     },
+    //Draw text according to the world coordinates
     drawWorldText : function (color, text, x, y, fill, center) {
         this.drawText(color, text, x - camera.x, y - camera.y, fill, center);
     },
+    //Draw a tile from the tileset
     drawTile : function(tileset, tile, x, y){
         CTX.drawImage(tileset.getImage(), tileset.tiles[tile].x, tileset.tiles[tile].y,
             tileset.tiles[tile].w, tileset.tiles[tile].h,
             x - camera.x, y - camera.y, tileset.tiles[tile].w, tileset.tiles[tile].h);
     },
+    //Draw an object
     drawObject : function(img, x, y, animation, frame){
         var d_x = 0, d_y = 0, d_w = img.imgW, d_h = img.imgH;
         if(animation){
@@ -54,6 +61,7 @@ var draw = {
 var camera = {
     x: 0,
     y: 0,
+    //Check that the camera bounding box doesn't exit the map
     checkMapBoundaries: function() {
         if (this.x < currentMap.offsetX) this.x = currentMap.offsetX;
         if (this.y < currentMap.offsetY) this.y = currentMap.offsetY;
@@ -62,6 +70,7 @@ var camera = {
         if ((this.y + gameArea.canvas.height) > (currentMap.offsetY + currentMap.mapH * currentMap.tileset.tileH))
             this.y = (currentMap.offsetY + currentMap.mapH * currentMap.tileset.tileH) - gameArea.canvas.height;
     },
+    //Center the camera on the player
     lockOnPlayer: function(){
         var tileW = currentMap.tileset.tileW;
         var tileH = currentMap.tileset.tileH;

@@ -18,6 +18,9 @@ var editorEntities = {
     4 : 'goal'
 };
 
+/**
+ * Initializes the level editor
+ */
 function initEditor(){
     mapEditor = {
         mapW: 0,
@@ -72,6 +75,7 @@ function initEditor(){
 
             this.updateInfo();
         },
+        //Draw map and the objects
         drawEditor: function(){
             newMap.drawMap();
             var l = newMap.objects.length;
@@ -80,24 +84,31 @@ function initEditor(){
                 tempObj = newMap.objects[i];
                 newMap.drawChar(tempObj);
             }
+            newMap.drawChar('P', newMap.playerStart[0], newMap.playerStart[1]); //Player start
         },
+        //Add one more row to the map
         addRow: function(){
             var newLine = [];
             for(var i = 0; i < this.newMapData.tiles[0].length; i++){
                 newLine.push(0);
             }
+            this.newMapData = newMap.toMapData();
             this.newMapData.tiles.push(newLine.splice(0));
             this.newMapData.hitmap.push(newLine.splice(0));
             this.mapH++;
             this.updateMap();
         },
+        //Delete one row
         deleteRow: function(){
+            this.newMapData = newMap.toMapData();
             this.newMapData.tiles.pop();
             this.newMapData.hitmap.pop();
             this.mapH--;
             this.updateMap();
         },
+        ///Add column
         addCol: function(){
+            this.newMapData = newMap.toMapData();
             for(var i = 0; i < this.newMapData.tiles.length; i++){
                 this.newMapData.tiles[i].push(0);
                 this.newMapData.hitmap[i].push(0);
@@ -105,7 +116,9 @@ function initEditor(){
             this.mapW++;
             this.updateMap();
         },
+        //Delete column
         deleteCol: function(){
+            this.newMapData = newMap.toMapData();
             for(var i = 0; i < this.newMapData.tiles.length; i++){
                 this.newMapData.tiles[i].pop();
                 this.newMapData.hitmap[i].pop();
@@ -113,14 +126,17 @@ function initEditor(){
             this.mapW--;
             this.updateMap();
         },
+        //Create a new map object with the updated data
         updateMap: function(){
             newMap = new map(this.newMapData);
             this.updateInfo();
         },
+        //Update the info element
         updateInfo: function(){
             infoText.innerHTML = 'Selected element: ' + editorEntities[this.selected] + '\n Map width: ' +
                 this.mapW + '\n Map height: ' + this.mapH;
         },
+        //Handle mouse hovering over a tile
         hoverTile: function(e){
             var mousepos = getMousePosScreen(gameArea.canvas, e);
             var pickedTile = null;
@@ -129,6 +145,18 @@ function initEditor(){
             }
             this.pickedTile = pickedTile;
         },
+        //Output map data into popup
+        showJSON : function(){
+          this.newMapData = newMap.toMapData();
+          var el = document.getElementById('jsontarget');
+          el.innerHTML = this.createJSON();
+          el.parentNode.style.display = 'block';
+        },
+        //Turn map object into json string
+        createJSON : function(){
+            return JSON.stringify(this.newMapData);
+        },
+        //Handle tile selection
         selectTile: function(e){
             e.preventDefault();
             if(!this.pickedTile)
@@ -139,6 +167,7 @@ function initEditor(){
                 newMap.removeObjectFrom(this.pickedTile.x, this.pickedTile.y);
                 return false;
             }
+            //Edit selected tile depending on what is selected
             if(this.pickedTile){
                 switch(selection){
                     case 'bg':

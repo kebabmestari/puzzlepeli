@@ -20,6 +20,7 @@ body{
 	flex-direction: column;
 }
 #info{
+        display: none;
 	border: 1px solid black;
 	margin: 10px;
 }
@@ -34,4 +35,24 @@ canvas{
 	-moz-user-select: none;
 	-webkit-touch-callout: none;
 	-webkit-user-drag: none;
+}
+
+#json{
+    margin: auto;
+    display: none;
+    background-color: white;
+    border: 1px dotted black;
+    z-index: 100;
+    position: absolute;
+    width: 50%;
+    max-height: 400px;
+    overflow-y: scroll;
+    top: 0px;
+}
+
+#ruksi{
+    position: absolute;
+    color: red;
+    top: 0px;
+    right: 0px;
 }

@@ -11,9 +11,14 @@ var keyScheme = {
     ADDCOL: 105,
     DELETECOL: 102,
     NEXTITEM: 107,
-    PREVITEM: 109
+    PREVITEM: 109,
+    SHOWDATA: 82
 };
 
+/**
+ * Handle key presses
+ * @param {Keyevent} event The event which was triggered
+ */
 function handleKeys(event){
 
 	var keynum = 0;
@@ -70,6 +75,9 @@ function handleKeys(event){
     else if(keynum == keyScheme.PREVITEM && editMode){
         mapEditor.scrollItems(-1);
     }
+    else if(keynum == keyScheme.SHOWDATA && editMode){
+        mapEditor.showJSON();
+    }    
     else if(keynum >= 49 && keynum <= 57 && editMode){
         mapEditor.selectItem(keynum - 49);
     }
@@ -77,6 +85,10 @@ function handleKeys(event){
 	console.log('Key ' + keynum + ' pressed');
 }
 
+/**
+ * Swipe callback
+ * @param {string} dir Direction into which the swipe happened
+ */
 function handleSwipe(dir){
     switch(dir){
         case 'up':
@@ -94,12 +106,21 @@ function handleSwipe(dir){
     }
 }
 
+/**
+ * Move the player to the desired direction
+ * @param {string} dir left,right,up,down
+ */
 function movePlayer(dir){
 	if(!player.isMoving){
 		player.move(dir);
     }
 }
 
+/**
+ * Detect and handle a touchscreen swipe event
+ * @param {element} el Element on which the listener is attached to
+ * @param {function} callback Callback function
+ */
 function swipeDetect(el, callback){
   
     var touchsurface = el,

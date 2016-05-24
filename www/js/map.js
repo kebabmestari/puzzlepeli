@@ -7,6 +7,8 @@
 var currentMap = null;
 var tiluset = null;
 
+var tilesetList = [];
+
 //Tile types
 var TILETYPE = {
     0   : 'BG',
@@ -44,6 +46,9 @@ function map(map){
         return this.mapOffSetY;
     }
 
+    /**
+     * Draw the map tiles
+     */
     this.drawMap = function(){
         var l = this.tileData.length;
         for(var i = 0; i < l; i++){
@@ -57,24 +62,91 @@ function map(map){
             }
         }
     }
-
-    this.drawChar = function(obj){
-        var pos = this.getTileScreenPos(obj.x, obj.y);
-        var posx = pos.x + obj.drawOffsetX;
-        var posy = pos.y + obj.drawOffsetY;
-
-        draw.drawRect(obj.color, posx, posy, this.tileset.tileW, this.tileset.tileH, true);
-        draw.drawWorldText('#FFF', obj.char, posx + this.tileset.tileW / 2, posy, true, true);
+    
+    /**
+     * Create map data from a map object, reverse map loading
+     */
+    this.toMapData = function(){
+        var newTileData = [];
+        var newHitData = [];
+        
+        for(var y = 0; y < this.mapH; y++){
+            var newRow  = [];
+            var newRow2 = [];
+            for(var x = 0; x < this.mapW; x++){
+                newRow.push(this.tileData[y * this.mapW + x].type);
+                newRow2.push((this.tileData[y * this.mapW + x].hit) ? 1 : 0);
+            }
+            newTileData.push(newRow);
+            newHitData.push(newRow2);
+        }
+        
+        var newMapData = new mapData(
+                this.name,
+                this.tileset.name,
+                newTileData,
+                newHitData,
+                this.playerStart,
+                this.objects
+        );
+        return newMapData;
     }
 
+    /**
+     * Draw a character on the map
+     * Given a gameobject or character and coordinates
+     */
+    this.drawChar = function(obj){
+        
+        var posx = 0, posy = 0, color = '#000', pos = {};
+        
+        if(typeof obj === 'object'){
+            pos = this.getTileScreenPos(obj.x, obj.y);
+            posx = pos.x + obj.drawOffsetX;
+            posy = pos.y + obj.drawOffsetY;
+            color = obj.color;
+        } else if(typeof obj === 'string'){
+            pos = this.getTileScreenPos(arguments[1], arguments[2]);
+            posx = pos.x;
+            posy = pos.y;
+            if(arguments[3])
+                color = arguments[3];
+        } else{
+            console.log('Invalid arguments to drawChar');
+            return;
+        }
+        
+        draw.drawRect(color, posx, posy, this.tileset.tileW, this.tileset.tileH, true);
+        draw.drawWorldText('#FFF', (obj.char ? obj.char : obj),
+                posx + this.tileset.tileW / 2, posy, true, true);
+    }
+
+    /**
+     * Checks whether a tile in the map has it's hit layer set to hit
+     * @param {number} x
+     * @param {number} y
+     * @returns {boolean} True if the tile is hittable
+     */
     this.isHit = function(x, y){
         return this.tileData[(y * this.mapW) + x].hit;
     }
 
+    /**
+     * Returns a tile object at given coordinates
+     * @param {number} x
+     * @param {number} y
+     * @returns {Array}
+     */
     this.getTile = function(x, y){
         return this.tileData[(y * this.mapW) + x];
     }
 
+    /**
+     * Returns the given tile position relative to screen in pixels
+     * @param {number} x
+     * @param {number} y
+     * @returns {map.getTileScreenPos.result} Properties x and y
+     */
     this.getTileScreenPos = function(x, y){
         var result = {};
 
@@ -84,6 +156,10 @@ function map(map){
         return result;
     }
 
+    /**
+     * Add an object to the map
+     * @param {GameObject} obj
+     */
     this.addObject = function(obj){
         var object = null;
         if(typeof obj === 'string')
@@ -103,6 +179,11 @@ function map(map){
         console.log("Object added");
     }
 
+    /**
+     * Removes an object from the given coordinates
+     * @param {number} x
+     * @param {number} y
+     */
     this.removeObjectFrom = function(x, y){
         for(var i = 0; i < this.objects.length; i++){
             var tempObj = this.objects[i];
@@ -114,9 +195,19 @@ function map(map){
         }
     }
 
+    /**
+     * Loads a map from mapdata and with given tileset
+     * @param {mapdata} map
+     * @param {tileset} tileset
+     * @returns {undefined}
+     */
     this.loadMap = function(map, tileset){
 
-        this.tileset = tileset;
+        if(typeof tileset !== 'string'){
+            console.log('Invalid tileset name to loadMap!');
+            return;
+        }
+        this.tileset = getTileset(tileset);
 
         if(!map) throw "Invalid map object given"
 
@@ -124,6 +215,9 @@ function map(map){
 
         this.mapW = map.tiles[0].length;
         this.mapH = map.tiles.length;
+        
+        //Set player position
+        window.player.setPosition(map.plrstart[0], map.plrstart[1]);
 
         //Load tile and hit data
         for(y = 0; y < this.mapH; y++){
@@ -133,27 +227,41 @@ function map(map){
             }
         }
 
+        //Reading and creating level objects
         for(var i = 0; i < map.objects.length; i++){
             var obj = map.objects[i];
-            if(obj instanceof gameobject){
-                this.objects.push(obj);
-                window.objectsVisible.push(obj);
+            switch (map.objects[i].name) {
+                case 'box':
+                    this.objects.push(
+                            new box(obj.x, obj.y) );
+                    break;
+                    
+                default:
+                    console.log('Unidentified object!');
+                    break;
             }
+            
         }
-
-        this.tileset = map.tileset;
-
     }
 
+    /**
+     * Clear a map
+     */
     this.clearMap = function(){
         this.objects = this.tileData = [];
         console.log("Map cleared");
     }
 
-    this.loadMap(map, tileset);
+    this.loadMap(map, map.tileset);
 
 }
 
+/**
+ * Gets a tile object from given coordinates
+ * @param {number} x
+ * @param {number} y
+ * @returns {tile} Tile from the coordinates
+ */
 map.prototype.getTileScreen = function(x, y){
     var startX = (x - this.offsetX + camera.x);
     var startY = (y - this.offsetY + camera.y);
@@ -181,8 +289,9 @@ function tile(x, y, type, hit, tile){
 
 //Tileset constructor
 //Object encloses data and methods about tileset
-function tileset(img, tileW, tileH){
+function tilesetObj(name, img, tileW, tileH){
 
+    this.name = name;
     this.image = img;
 
     this.tilesX = ~~(img.width/tileW);
@@ -216,7 +325,26 @@ function tileset(img, tileW, tileH){
     };
 
     if(this.image) this.createTileset();
+    
+    //Add new tileset to list
+    window.tilesetList.push(this);
 
+}
+
+/**
+ * Get a tileset object by name
+ * @param {string} name Name of the tileset
+ * @returns {tileset} Found tileset or null
+ */
+function getTileset(name){
+    for(var i = 0; i < window.tilesetList.length; i++){
+        var temp = window.tilesetList[i];
+        if(temp.name === name){
+            return temp; 
+        }
+    }
+    console.log('Tileset ' + name + ' not found!');
+    return null;
 }
 
 //Represents a tile in tileset, eg it's dimensions
@@ -228,9 +356,9 @@ function tileRect(x, y, w, h){
 }
 
 var kebab = document.getElementById('testitileset');
-tiluset = new tileset(kebab, 25, 25);
+tiluset = new tilesetObj("testi", kebab, 25, 25);
 
-var defaultTileset = tiluset;
+var defaultTileset = 'testi';
 
 function mapData(name, tileset, tiles, hitmap, plrstart, objects){
     this.name = name || 'unnamed';
@@ -239,12 +367,13 @@ function mapData(name, tileset, tiles, hitmap, plrstart, objects){
     this.hitmap = hitmap || [];
     this.plrstart = plrstart || [0,0];
     this.objects = objects || [];
+    console.log('Map ' + name + ' with tileset ' + tileset + ' created');
 }
 
 //Test map please ignore
 var map1 = new mapData(
 'testi',
-tiluset,
+'testi',
 [
 [0,0,0,0,0,0,0,0,0,0,0,0,0,0],
 [0,1,1,1,1,1,1,0,0,0,0,0,0,0],

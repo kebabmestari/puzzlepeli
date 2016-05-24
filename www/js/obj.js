@@ -153,16 +153,22 @@ gameObject.prototype.stopAnimation = function(){
 
 //Set object position
 gameObject.prototype.setPosition = function(x, y){
+    if(!currentMap){
+        this.x = x; this.y = y;
+        return;
+    }
     if(x >= 0 && x < currentMap.mapW && y >= 0 && y < currentMap.mapH){
         this.x = x; this.y = y;
     }
+    console.log('Set position of object ' + this.name + ' to ' + x + ',' + y);
 }
 
+//Get object position on the screen
 gameObject.prototype.getScreenPosition = function(){
     var pos = currentMap.getTileScreenPos(this.x, this.y);
-    var posx = pos.x + this.drawOffsetX;
-    var posy = pos.y + this.drawOffsetY
-    return {posx, posy};
+    pos.x + this.drawOffsetX;
+    pos.y + this.drawOffsetY
+    return pos;
 }
 
 //Draw image on the screen
@@ -217,14 +223,14 @@ function playerObj(x, y){
         }
     }
 
-    console.log('Player created');
+    console.log('Player created at ' + x + ',' + y);
 }
 playerObj.prototype = Object.create(gameObject.prototype);
 
 function box(x, y){
     gameObject.call(this, 'box', x, y, 'red', '#', null);
 
-    console.log('Box created');
+    console.log('Box created at ' + x + ',' + y);
 }
 box.prototype = Object.create(gameObject.prototype);
 
