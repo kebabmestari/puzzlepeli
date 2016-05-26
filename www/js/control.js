@@ -1,5 +1,10 @@
+/**
+ * Functions and event handlers for input events
+ */
+
 "use strict";
 
+//Keybindings
 var keyScheme = {
 	LEFT: 	37,
 	UP:		38,

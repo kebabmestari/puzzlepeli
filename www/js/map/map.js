@@ -4,17 +4,30 @@
 
  "use strict";
 
+///Current map object
 var currentMap = null;
+
 var tiluset = null;
 
+//Array of tilesets
 var tilesetList = [];
+
+//Box count
+var levelBoxes = 0;
 
 //Tile types
 var TILETYPE = {
     0   : 'BG',
     1   : 'WALL',
-    2   : 'GOAL'
+    2   : 'GOAL',
+    3   : 'DOOR'
 };
+
+//Get goal tile number
+var goalTile = -1;
+for(var i = 0; i < Object.keys(TILETYPE).length; i++){
+    if(TILETYPE[i] === 'GOAL') goalTile = i;
+}
 
 /**
 *   Map constructor
@@ -30,6 +43,8 @@ function map(map){
     this.objects = [];
     this.offsetX = 0;
     this.offsetY = 0;
+    
+    this.requiredBoxes = 0;
 
     this.playerStart = [0, 0];
 
@@ -61,6 +76,10 @@ function map(map){
                 temp_tile.highlight = false;
             }
         }
+    }
+    
+    this.isGoal = function(x, y){
+        return this.getTile(x, y).type === goalTile;
     }
     
     /**
@@ -216,6 +235,7 @@ function map(map){
         this.mapW = map.tiles[0].length;
         this.mapH = map.tiles.length;
         
+        
         //Set player position
         window.player.setPosition(map.plrstart[0], map.plrstart[1]);
 
@@ -241,6 +261,11 @@ function map(map){
                     break;
             }
             
+            var boxcount = 0;
+            for(var o in this.objects)
+                if(this.objects[o].name && this.objects[o].name === 'box') boxcount++;
+            this.requiredBoxes = map.requiredBoxes || (boxcount === 0 ? 1 : boxcount);
+        
         }
     }
 
@@ -360,13 +385,17 @@ tiluset = new tilesetObj("testi", kebab, 25, 25);
 
 var defaultTileset = 'testi';
 
-function mapData(name, tileset, tiles, hitmap, plrstart, objects){
+function mapData(name, tileset, tiles, hitmap, plrstart, objects, requiredboxes){
     this.name = name || 'unnamed';
     this.tileset = tileset || window.defaultTileset;
     this.tiles = tiles || [];
     this.hitmap = hitmap || [];
     this.plrstart = plrstart || [0,0];
     this.objects = objects || [];
+    var boxcount = 0;
+    for(var o in objects)
+        if(o.name && o.name === 'box') boxcount++;
+    this.requiredBoxes = requiredboxes || boxcount;
     console.log('Map ' + name + ' with tileset ' + tileset + ' created');
 }
 

@@ -1,4 +1,5 @@
 /**
+ * Base class for all game objects
  * Created by Samuel on 3/23/2016.
  */
 
@@ -7,8 +8,21 @@
 //Container for all animations
 var animations = [];
 
+//Objects moving speed
 var OBJMOVESPEED = 5;
 
+//Boxes required for finish
+var requiredBoxes = 0, boxesAtGoals = 0;
+
+/**
+ * Base class constructor
+ * @param {string} name Name/type of the object
+ * @param {number} x X coordinate in tiles
+ * @param {number} y Y coordinate in tiles
+ * @param {color} color Placeholder background color
+ * @param {string} char Placeholder character
+ * @param {string} img Image element ID
+ */
 function gameObject(name, x, y, color, char, img) {
 
     //Object name
@@ -49,8 +63,18 @@ function gameObject(name, x, y, color, char, img) {
         this.imgH = img.height;
     }
 
-    console.log("Game object " + name + " created");
+    console.log("Game object " + name + " created at " + x + "," + y);
 }
+
+//Are this object and the given object touching
+gameObject.prototype.isColliding = function(obj){
+    if(typeof obj !== 'object')
+        throw 'Invalid object given to isColliding';
+    if(this.x === obj.x && this.y === obj.y)
+        return true;
+    else
+        return false;
+};
 
 //Set animation for this object
 gameObject.prototype.setAnimation = function(anim){
@@ -67,7 +91,7 @@ gameObject.prototype.setAnimation = function(anim){
         this.isAnimated = true;
         this.animation = anim;
     }
-}
+};
 
 gameObject.prototype.updateMovement = function(){
     if(this.isMoving){
@@ -94,7 +118,7 @@ gameObject.prototype.updateMovement = function(){
             this.drawOffsetY = 0;
         }
     }
-}
+};
 
 gameObject.prototype.move = function(dir){
     switch (dir.toLowerCase()) {
@@ -128,7 +152,7 @@ gameObject.prototype.move = function(dir){
         this.targetY = this.y;
     }
     if(this.isMoving) this.moveDir = dir;
-}
+};
 
 //Check time and update animation if needed
 gameObject.prototype.updateAnimation = function(){
@@ -136,7 +160,7 @@ gameObject.prototype.updateAnimation = function(){
         this.updateFrame();
         this.animationTick = Date.now();
     }
-}
+};
 
 //Go to next frame
 gameObject.prototype.updateFrame = function(){
@@ -144,12 +168,12 @@ gameObject.prototype.updateFrame = function(){
     if(this.animationFrame >= this.animation.frames){
         this.animationFrame = 0;
     }
-}
+};
 
 //Stop animation
 gameObject.prototype.stopAnimation = function(){
     this.isAnimated = false;
-}
+};
 
 //Set object position
 gameObject.prototype.setPosition = function(x, y){
@@ -161,15 +185,15 @@ gameObject.prototype.setPosition = function(x, y){
         this.x = x; this.y = y;
     }
     console.log('Set position of object ' + this.name + ' to ' + x + ',' + y);
-}
+};
 
 //Get object position on the screen
 gameObject.prototype.getScreenPosition = function(){
     var pos = currentMap.getTileScreenPos(this.x, this.y);
     pos.x + this.drawOffsetX;
-    pos.y + this.drawOffsetY
+    pos.y + this.drawOffsetY;
     return pos;
-}
+};
 
 //Draw image on the screen
 gameObject.prototype.drawObject = function(){
@@ -178,7 +202,7 @@ gameObject.prototype.drawObject = function(){
 
     var pos = currentMap.getTileScreenPos(this.x, this.y);
     var posx = pos.x + this.drawOffsetX;
-    var posy = pos.y + this.drawOffsetY
+    var posy = pos.y + this.drawOffsetY;
 
     if(this.img){
         draw.drawObject(this.img, posx, posy, this.animation, this.animationFrame);
@@ -186,67 +210,7 @@ gameObject.prototype.drawObject = function(){
         draw.drawRect(this.color, posx, posy, currentMap.tileset.tileW, currentMap.tileset.tileH, true);
         draw.drawWorldText('#FFF', this.char, posx + currentMap.tileset.tileW / 2, posy, true, true);
     }
-}
-
-function playerObj(x, y){
-    gameObject.call(this, 'player', x, y, 'green', '@', 'pelaajakuva');
-
-    this.move = function(x, y){
-        gameObject.prototype.move.call(this, x, y);
-        var l = currentMap.objects.length;
-        for(var i = 0; i < l; i++){
-            var tempObj = currentMap.objects[i];
-            if(tempObj.x === this.targetX && tempObj.y === this.targetY){
-                var boxTargetX = tempObj.x, boxTargetY = tempObj.y;
-                switch(this.moveDir){
-                    case 'up':
-                        boxTargetY -= 1;
-                        break;
-                    case 'right':
-                        boxTargetX += 1;
-                        break;
-                    case 'down':
-                        boxTargetY += 1;
-                        break;
-                    case 'left':
-                        boxTargetX -= 1;
-                        break;
-                }
-                if(tempObj.canMoveTo(boxTargetX, boxTargetY)){
-                    tempObj.move(this.moveDir);
-                }else{
-                    this.isMoving = false;
-                    this.targetX = this.x;
-                    this.targetY = this.y;
-                }
-            }
-        }
-    }
-
-    console.log('Player created at ' + x + ',' + y);
-}
-playerObj.prototype = Object.create(gameObject.prototype);
-
-function box(x, y){
-    gameObject.call(this, 'box', x, y, 'red', '#', null);
-
-    console.log('Box created at ' + x + ',' + y);
-}
-box.prototype = Object.create(gameObject.prototype);
-
-box.prototype.canMoveTo = function(x, y){
-    var l = currentMap.objects.length;
-    for(var i = 0; i < l; i++){
-        var tempObj = currentMap.objects[i];
-        if((tempObj != this) && (tempObj.x === x && tempObj.y === y)){
-            return false;
-        }
-        if(currentMap.getTile(x, y).hit){
-            return false;
-        }
-    }
-    return true;
-}
+};
 
 //Animation object
 function animation(name, frameW, frameH, frames, speed, startFrame){

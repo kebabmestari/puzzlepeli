@@ -15,7 +15,9 @@ var editorEntities = {
     1 : 'wall',
     2 : 'box',
     3 : 'playerstart',
-    4 : 'goal'
+    4 : 'goal',
+    5 : 'door',
+    6 : 'key'
 };
 
 /**
@@ -189,6 +191,12 @@ function initEditor(){
                         this.pickedTile.type = 2;
                         this.pickedTile.hit = false;
                         break;
+                    case 'door':
+                        this.pickedTile.type = 3;
+                        this.pickedTile.hit = true;
+                    case 'key':
+                        this.pickedTile.type = 3;
+                        this.pickedTile.hit = true;                        
                 }
             }
         },

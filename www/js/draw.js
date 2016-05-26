@@ -1,9 +1,8 @@
 /**
- * This file containes methods related to drawing to the canvas
- * Created by Samuel on 3/23/2016.
+ * Methods related to drawing to the canvas
  */
 
-"use strict";
+'use strict';
 
 var CAMERASPEED = 25;
 
@@ -27,7 +26,7 @@ var draw = {
         CTX.fillStyle   = color;
         CTX.strokeStyle = color;
         CTX.textBaseline = 'top';
-        CTX.textAlign = center?'center':'left';
+        CTX.textAlign = center ? 'center' : 'left';
         if(fill){
             CTX.fillText(text, x, y);
         }else{

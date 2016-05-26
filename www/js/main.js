@@ -4,6 +4,13 @@
 var CTX = null;
 var player = null;
 
+//Game variable
+var gameOn = true;
+
+//Inventory array
+var inventory = [];
+
+//Main object
 var gameArea = {
     
     //Create the canvas element
@@ -30,14 +37,21 @@ var gameArea = {
         CTX.font = "20px Helvetica, serif";
         CTX.textAlign = "center";
         CTX.strokeText("Loading", this.canvas.getAttribute("width")/2, this.canvas.getAttribute("height")/2);
-
+        debugger;
         player = new playerObj(0,0);
         player.setAnimation(new animation('plranim', 25, 25, 2, 1000));
-        currentMap = new map(JSON.parse(
-                '{"name":"newmap","tileset":"testi","tiles":[[1,1,1,1,1,1,1,1,1,1],[1,0,0,0,0,0,0,0,0,1],[1,0,2,0,0,0,0,0,0,1],[1,0,1,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,1,0,0,1],[1,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,1],[1,1,1,1,1,1,1,1,1,1]],"hitmap":[[1,1,1,1,1,1,1,1,1,1],[1,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,1],[1,0,1,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,1,0,0,1],[1,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,1],[1,1,1,1,1,1,1,1,1,1]],"plrstart":[3,5],"objects":[{"name":"box","x":4,"y":4,"imgW":0,"imgH":0,"drawOffsetX":0,"drawOffsetY":0,"color":"red","isAnimated":false,"animation":null,"animationFrame":0,"animationTick":1464082202436,"isMoving":false,"targetX":0,"targetY":0,"moveDir":"","char":"#","img":null},{"name":"box","x":4,"y":7,"imgW":0,"imgH":0,"drawOffsetX":0,"drawOffsetY":0,"color":"red","isAnimated":false,"animation":null,"animationFrame":0,"animationTick":1464082202856,"isMoving":false,"targetX":0,"targetY":0,"moveDir":"","char":"#","img":null},{"name":"box","x":7,"y":3,"imgW":0,"imgH":0,"drawOffsetX":0,"drawOffsetY":0,"color":"red","isAnimated":false,"animation":null,"animationFrame":0,"animationTick":1464082203196,"isMoving":false,"targetX":0,"targetY":0,"moveDir":"","char":"#","img":null}]}'
-                ));
+        
+//        var startmap = {};
+//        loadMapFile('http://kebabkeisari.com/foo/puzzle/testi.map', startmap, false);
 
         this.attachEvents();
+        
+        var wmes = window.setInterval(function(){console.log('waiting..');}, 1000);
+
+        window.clearInterval(wmes);
+
+        currentMap = new map(getMap(0));
+        this.countBoxes();
 
         gameArea.update();
     },
@@ -86,18 +100,46 @@ var gameArea = {
         }
     },
     update : function(){
-        player.updateMovement();
+        if(gameOn)
+            player.updateMovement();
         if(currentMap) {
+            
             var l = currentMap.objects.length;
+            
+            var boxesAtGoals = 0;
+            
             for (var i = 0; i < l; i++) {
-                currentMap.objects[i].updateMovement();
+                var tempobj = currentMap.objects[i];
+                tempobj.updateMovement();
+                
+                //Count how many boxes are over goals
+                if(tempobj.name === 'box'){
+                    if(tempobj.checkGoal()){
+                        boxesAtGoals++;
+                    }
+                }
+                
+                //Check if they are enough for win
+                if(boxesAtGoals >= currentMap.requiredBoxes){
+                    gameOn = false;
+                    draw.drawCenteredText('WIN');
+                }
             }
         }
 
         gameArea.drawEverything();
         requestAnimationFrame(gameArea.update);
+    },
+    countBoxes : function(){
+        levelBoxes = 0;
+        var l = currentMap.objects.length;
+        for (var i = 0; i < l; i++) {
+            if(currentMap.objects[i].name === 'box'){
+                levelBoxes++;
+            }
+        }
     }
-}
+};
 
 gameArea.init();
 document.addEventListener('deviceready', gameArea.init, false);
