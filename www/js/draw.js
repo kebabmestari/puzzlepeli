@@ -45,7 +45,7 @@ var draw = {
     },
     //Draw an object
     drawObject : function(img, x, y, animation, frame){
-        var d_x = 0, d_y = 0, d_w = img.imgW, d_h = img.imgH;
+        var d_x = 0, d_y = 0, d_w = img.width, d_h = img.height;
         if(animation){
             d_x = (frame + animation.startFrame) * animation.frameW;
             d_y = 0;
@@ -64,10 +64,10 @@ var camera = {
     checkMapBoundaries: function() {
         if (this.x < currentMap.offsetX) this.x = currentMap.offsetX;
         if (this.y < currentMap.offsetY) this.y = currentMap.offsetY;
-        if ((this.x + gameArea.canvas.width) > (currentMap.offsetX + currentMap.mapW * currentMap.tileset.tileW))
-            this.x = (currentMap.offsetX + currentMap.mapW * currentMap.tileset.tileW) - gameArea.canvas.width;
-        if ((this.y + gameArea.canvas.height) > (currentMap.offsetY + currentMap.mapH * currentMap.tileset.tileH))
-            this.y = (currentMap.offsetY + currentMap.mapH * currentMap.tileset.tileH) - gameArea.canvas.height;
+        if ((this.x + gameArea.canvas.width) > currentMap.getMapOffsetX() + currentMap.getMapW())
+            this.x = (currentMap.offsetX + currentMap.getMapOffsetX() + currentMap.getMapW()) - gameArea.canvas.width;
+        if ((this.y + gameArea.canvas.height) > currentMap.getMapOffsetY() + currentMap.getMapH())
+            this.y = (currentMap.getMapOffsetY() + currentMap.getMapH()) - gameArea.canvas.height;
     },
     //Center the camera on the player
     lockOnPlayer: function(){

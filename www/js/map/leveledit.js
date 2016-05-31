@@ -8,7 +8,7 @@ var newMap = null;
 var editMode = false;
 
 var infoDiv = document.getElementById('info');
-var infoText = infoDiv.firstChild;
+var infoText = document.querySelector('#info > p');
 
 var editorEntities = {
     0 : 'bg',
@@ -17,7 +17,8 @@ var editorEntities = {
     3 : 'playerstart',
     4 : 'goal',
     5 : 'door',
-    6 : 'key'
+    6 : 'key',
+    7 : 'water'
 };
 
 /**
@@ -33,7 +34,7 @@ function initEditor(){
         mapName: 'empty',
         newMapData: null,
         init: function(){
-            window.infoDiv.style.display = 'block';
+            window.infoDiv.style.display = 'flex';
             this.mapW = window.prompt('Map WIDTH in tiles', 10);
             this.mapH = window.prompt('Map HEIGHT in tiles', 10);
             this.mapName = window.prompt('Map NAME', 'newmap');
@@ -60,6 +61,7 @@ function initEditor(){
             console.log('Editor initialized');
 
             editMode = true;
+            gameOn = false;
 
             //Add event handler
             gameArea.canvas.addEventListener('mousemove', function(e){
@@ -158,6 +160,35 @@ function initEditor(){
         createJSON : function(){
             return JSON.stringify(this.newMapData);
         },
+        updateValues : function(){
+            newMap.requiredBoxes = document.getElementById('boxes').value;
+            var neww = document.getElementById('width').value || newMap.mapW;
+            var newh = document.getElementById('height').value || newMap.mapH;
+            
+            var difw = Math.abs(neww - this.mapW);
+            var difh = Math.abs(newh - this.mapH);
+            
+            if(neww > this.mapW){
+                for(var i = 0; i < difw; i++){
+                    this.addCol();
+                }
+            } else if(neww < this.mapW){
+                for(var i = 0; i < difw; i++){
+                    this.deleteCol();
+                }
+            }
+            if(newh > this.mapH){
+                for(var i = 0; i < difh; i++){
+                    this.addRow();
+                }
+            } else if(newh < this.mapH){
+                for(var i = 0; i < difh; i++){
+                    this.deleteRow();
+                }
+            }
+            
+            console.log('Updated map values');
+        },
         //Handle tile selection
         selectTile: function(e){
             e.preventDefault();
@@ -167,6 +198,7 @@ function initEditor(){
             var selection = editorEntities[this.selected];
             if(mouseButton === 2){
                 newMap.removeObjectFrom(this.pickedTile.x, this.pickedTile.y);
+                e.stopPropagation();
                 return false;
             }
             //Edit selected tile depending on what is selected
@@ -175,6 +207,10 @@ function initEditor(){
                     case 'bg':
                         this.pickedTile.type = 0;
                         this.pickedTile.hit = false;
+                        break;
+                    case 'water':
+                        this.pickedTile.type = 4;
+                        this.pickedTile.hit = true;
                         break;
                     case 'wall':
                         this.pickedTile.type = 1;
@@ -194,24 +230,29 @@ function initEditor(){
                     case 'door':
                         this.pickedTile.type = 3;
                         this.pickedTile.hit = true;
+                        break;
                     case 'key':
-                        this.pickedTile.type = 3;
-                        this.pickedTile.hit = true;                        
+                        newMap.addObject(new key(this.pickedTile.x, this.pickedTile.y));
+                        break;                   
                 }
             }
         },
-        updateInfo: function(){
-            infoText.innerHTML = 'Selected element: ' + editorEntities[this.selected] + '\n Map width: ' +
-                this.mapW + '\n Map height: ' + this.mapH;
-        },
-        hoverTile: function(e){
-            var mousepos = getMousePosScreen(gameArea.canvas, e);
-            var pickedTile = null;
-            if(pickedTile = newMap.getTileScreen(mousepos.x, mousepos.y)){
-                pickedTile.highlight = true;
-            }
-            this.pickedTile = pickedTile;
-        },
+        //Update info box
+//        updateInfo: function(){
+//            infoText.innerHTML = 'Selected element: ' + editorEntities[this.selected] + '\n Map width: ' +
+//                this.mapW + '\n Map height: ' + this.mapH;
+//        },
+//        //Handle mouse hoverin over tile
+//        hoverTile: function(e){
+//            var mousepos = getMousePosScreen(gameArea.canvas, e);
+//            var pickedTile = null;
+//            if(pickedTile = newMap.getTileScreen(mousepos.x, mousepos.y)){
+//                pickedTile.highlight = true;
+//            }
+//            this.pickedTile = pickedTile;
+//        },
+        //Scroll item list to a direction
+        //dir can be any number, positive or negative
         scrollItems: function(dir){
             this.selected += dir;
             var max = Object.keys(editorEntities).length - 1;
@@ -222,6 +263,7 @@ function initEditor(){
 
             this.updateInfo();
         },
+        //Select item by id
         selectItem: function(num){
             if(editorEntities[num]){
                 this.selected = num;

@@ -37,7 +37,11 @@ var gameArea = {
         CTX.font = "20px Helvetica, serif";
         CTX.textAlign = "center";
         CTX.strokeText("Loading", this.canvas.getAttribute("width")/2, this.canvas.getAttribute("height")/2);
-        debugger;
+
+        var kebab = document.getElementById('testitileset');
+        tiluset = new tilesetObj("testi", kebab, 25, 25);
+        tiluset.addAnimation('water', 4, 2, 500);
+
         player = new playerObj(0,0);
         player.setAnimation(new animation('plranim', 25, 25, 2, 1000));
         
@@ -57,9 +61,12 @@ var gameArea = {
     },
     
     attachEvents: function(){
+        
+        //Game controllers
         window.addEventListener('keydown', handleKeys);
         swipeDetect(window, handleSwipe);
 
+        //Prevent dragging on the page
         this.canvas.ondragstart = function(e) {
             if (e && e.preventDefault) { e.preventDefault(); }
             if (e && e.stopPropagation) { e.stopPropagation(); }
@@ -72,14 +79,20 @@ var gameArea = {
             return false;
         }
         
+        //Prevent context menu on right click but handle the event
         document.addEventListener('contextmenu', function(e){
             e.preventDefault();
+            var event = document.createEvent('mousedown')
+            event.button = 2;
+            gameArea.dispatchEvent(event);
         });
     },
+    //Clear the screen
     clear : function(){
         CTX.fillStyle = "white";
         CTX.fillRect(0, 0, this.width, this.height);
     },
+    //Draw the game
     drawEverything : function(){
         this.clear();
         if(currentMap) {
@@ -99,9 +112,14 @@ var gameArea = {
             mapEditor.drawEditor();
         }
     },
+    //Update the game logic and everything else
     update : function(){
-        if(gameOn)
+        
+        if(gameOn){
             player.updateMovement();
+            handleCollisions();
+        }
+        
         if(currentMap) {
             
             var l = currentMap.objects.length;
@@ -126,6 +144,8 @@ var gameArea = {
                 }
             }
         }
+        
+        currentMap.clearRemoveList();
 
         gameArea.drawEverything();
         requestAnimationFrame(gameArea.update);

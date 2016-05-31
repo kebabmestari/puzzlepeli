@@ -32,6 +32,8 @@ function handleKeys(event){
       keynum = event.keyCode;
     } else if(event.which){               
       keynum = event.which;
+    } else{
+        throw 'Failed to get key code';
     }
 
     if(keynum === keyScheme.LEFT) {

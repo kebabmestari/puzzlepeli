@@ -19,11 +19,6 @@ body{
 	display: flex;
 	flex-direction: column;
 }
-#info{
-        display: none;
-	border: 1px solid black;
-	margin: 10px;
-}
 #info>p{
 	white-space: pre-line;
 }
@@ -55,4 +50,21 @@ canvas{
     color: red;
     top: 0px;
     right: 0px;
+}
+#info{
+        display: none;
+	border: 1px solid black;
+	margin: 10px;
+        flex-flow: row nowrap;
+        justify-content: space-between;        
+}
+#info > div{
+    display: flex;
+    flex-direction: column;
+}
+
+#info > div > div{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
 }

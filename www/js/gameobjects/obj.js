@@ -53,6 +53,9 @@ function gameObject(name, x, y, color, char, img) {
     this.targetX = 0;
     this.targetY = 0;
     this.moveDir = '';
+    
+    //If flag is true the object will be destroyed when it's movement is complete
+    this.destroyAtEnd = false;
 
     //Placeholder character
     this.char = (typeof char === 'string' && char.length === 1) ?char:'?';
@@ -93,6 +96,7 @@ gameObject.prototype.setAnimation = function(anim){
     }
 };
 
+//Update smooth movement of the object
 gameObject.prototype.updateMovement = function(){
     if(this.isMoving){
         if(this.targetX > this.x){
@@ -109,6 +113,7 @@ gameObject.prototype.updateMovement = function(){
         var tileW = currentMap.tileset.tileW;
         var tileH = currentMap.tileset.tileH;
 
+        //Check if the object has reached it's destination
         if(Math.abs((this.targetX*tileW - (this.x*tileW+this.drawOffsetX))) <= window.OBJMOVESPEED &&
            Math.abs((this.targetY*tileH - (this.y*tileH+this.drawOffsetY))) <= window.OBJMOVESPEED){
             this.isMoving = false;
@@ -116,11 +121,25 @@ gameObject.prototype.updateMovement = function(){
             this.y = this.targetY;
             this.drawOffsetX = 0;
             this.drawOffsetY = 0;
+            //Destroy object if it is wished so
+            //Boxes hit water etc
+            if(this.destroyAtEnd){
+                currentMap.removeObject(this);
+            }
         }
     }
 };
 
+/**
+ * Set the object into a move
+ * @param {string} dir direction into which move the object
+ */
 gameObject.prototype.move = function(dir){
+    
+    //Prevent moving if game is paused
+    if(!window.gameOn)
+        return;
+    
     switch (dir.toLowerCase()) {
         case 'up':
             this.isMoving = true;
@@ -146,7 +165,12 @@ gameObject.prototype.move = function(dir){
             // statements_def
             break;
     }
+    //Check for walls
     if(currentMap.isHit(this.targetX, this.targetY)){
+        if(this.name === 'player' && !this.checkWallCollision(this.targetX, this.targetY))
+            return;
+        if(this.name === 'box' && !this.checkSpecialCollision(this.targetX, this.targetY))
+            return;
         this.isMoving = false;
         this.targetX = this.x;
         this.targetY = this.y;
@@ -211,18 +235,3 @@ gameObject.prototype.drawObject = function(){
         draw.drawWorldText('#FFF', this.char, posx + currentMap.tileset.tileW / 2, posy, true, true);
     }
 };
-
-//Animation object
-function animation(name, frameW, frameH, frames, speed, startFrame){
-
-    this.name = name;
-    this.frameW = frameW;
-    this.frameH = frameH;
-    this.frames = frames;
-    this.startFrame = startFrame || 0;
-    this.speed = speed; //Length of one frame
-
-    window.animations.push(this);
-
-    console.log('Animation ' + this.name + ' created');
-}

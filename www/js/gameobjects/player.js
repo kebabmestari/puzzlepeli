@@ -11,8 +11,11 @@ function playerObj(x, y){
     this.move = function(x, y){
         gameObject.prototype.move.call(this, x, y);
         var l = currentMap.objects.length;
+        
+        //Move boxes out of the way
         for(var i = 0; i < l; i++){
             var tempObj = currentMap.objects[i];
+            if(tempObj.name !== 'box') continue;
             if(tempObj.x === this.targetX && tempObj.y === this.targetY){
                 var boxTargetX = tempObj.x, boxTargetY = tempObj.y;
                 switch(this.moveDir){
@@ -43,3 +46,21 @@ function playerObj(x, y){
     console.log('Player created at ' + x + ',' + y);
 }
 playerObj.prototype = Object.create(gameObject.prototype);
+
+//Handle special wall collisions like doors
+playerObj.prototype.checkWallCollision = function(x, y){
+    var door = getTileType('DOOR');
+    console.log(door + " " + x + " " + y);
+    //Door opening
+    if(currentMap.getTile(x, y).type === door){
+        var temp = checkInventory('key');
+        if(temp){
+            currentMap.setTile(x, y, 0, false);
+            removeFromInventory(temp);
+            playSound('door_open');
+            console.log('Opened door');
+        }
+    }
+    
+    return true;
+};
