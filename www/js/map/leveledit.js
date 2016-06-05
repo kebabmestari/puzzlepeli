@@ -18,7 +18,8 @@ var editorEntities = {
     4 : 'goal',
     5 : 'door',
     6 : 'key',
-    7 : 'water'
+    7 : 'water',
+    8 : 'enemy1'
 };
 
 /**
@@ -233,6 +234,10 @@ function initEditor(){
                         break;
                     case 'key':
                         newMap.addObject(new key(this.pickedTile.x, this.pickedTile.y));
+                        break;                   
+                    case 'enemy1':
+                        newMap.addObject(new enemy(this.pickedTile.x, this.pickedTile.y,
+                            ENEMYTYPE.BACKANDFORTH));
                         break;                   
                 }
             }

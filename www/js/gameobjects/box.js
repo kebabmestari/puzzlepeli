@@ -23,6 +23,15 @@ box.prototype.move = function(dir){
 };
 
 /**
+ * Sink or destroy the box
+ */
+box.prototype.checkDestroyAtEnd = function(){
+    gameObject.prototype.checkDestroyAtEnd.call(this);
+    if(currentMap.getTile(this.x, this.y).type === getTileNumber('WATER'))
+        currentMap.setTile(this.x, this.y, getTileNumber('SUNKENBOX'), false);
+};
+
+/**
  * Checks whether the box can move to given coordinates, aka there are
  * no other objects on the way and the hitmap is false
  * @param {type} x
@@ -30,19 +39,17 @@ box.prototype.move = function(dir){
  * @returns {Boolean}
  */
 box.prototype.canMoveTo = function(x, y){
-    var l = currentMap.objects.length;
-    for(var i = 0; i < l; i++){
-        var tempObj = currentMap.objects[i];
-        if((tempObj !== this) && (tempObj.x === x && tempObj.y === y)){
-            return false;
-        }
+
+    if(gameObject.prototype.canMoveTo.call(this, x, y)){
         if(currentMap.getTile(x, y).hit){
             if(currentMap.getTile(x, y).type === getTileNumber('WATER'))
                 return true;
             return false;
         }
+        return true;
+    } else{
+        return false;
     }
-    return true;
 };
 
 /**
@@ -66,7 +73,6 @@ box.prototype.checkGoal = function(){
 box.prototype.checkSpecialCollision = function(targetX, targetY){
     //Box collision with water
     if(currentMap.getTile(targetX, targetY).type === getTileNumber('WATER')){
-        currentMap.setTile(targetX, targetY, getTileNumber('SUNKENBOX'), false);
         playSound('box_sink');
         this.destroyAtEnd = true; //Remove box when it hits the water
         return false; //Can move

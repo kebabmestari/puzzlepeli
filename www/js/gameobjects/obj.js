@@ -60,6 +60,7 @@ function gameObject(name, x, y, color, char, img) {
     //Placeholder character
     this.char = (typeof char === 'string' && char.length === 1) ?char:'?';
 
+    //Load image element
     this.img = document.getElementById(img) || null;
     if(this.img){
         this.imgW = img.width;
@@ -123,11 +124,41 @@ gameObject.prototype.updateMovement = function(){
             this.drawOffsetY = 0;
             //Destroy object if it is wished so
             //Boxes hit water etc
-            if(this.destroyAtEnd){
-                currentMap.removeObject(this);
-            }
+            this.checkDestroyAtEnd();
         }
     }
+};
+
+/**
+ * Check if the object should be destroyed at the end of its
+ * moveset and removes it if so
+ */
+gameObject.prototype.checkDestroyAtEnd = function(){
+    if(this.destroyAtEnd){
+        currentMap.removeObject(this);
+    }
+}
+
+/**
+ * Check if there are other objects on the way
+ * @param {number} x
+ * @param {number} y
+ * @returns {Boolean} True if way is clear
+ */
+gameObject.prototype.canMoveTo = function(x, y){
+
+    //Doesn't affect the player!
+    if(this.name === 'player')
+        return true;
+
+    var l = currentMap.objects.length;
+    for(var i = 0; i < l; i++){
+        var tempObj = currentMap.objects[i];
+        if((tempObj !== this) && (tempObj.x === x && tempObj.y === y)){
+            return false;
+        }
+    }
+    return true;
 };
 
 /**
@@ -166,14 +197,21 @@ gameObject.prototype.move = function(dir){
             break;
     }
     //Check for walls
-    if(currentMap.isHit(this.targetX, this.targetY)){
+    if(currentMap.isHit(this.targetX, this.targetY) || !this.canMoveTo(this.targetX, this.targetY)){
+        //Player collision with doors etc
         if(this.name === 'player' && !this.checkWallCollision(this.targetX, this.targetY))
             return;
+        //Box collision with water etc
         if(this.name === 'box' && !this.checkSpecialCollision(this.targetX, this.targetY))
             return;
         this.isMoving = false;
         this.targetX = this.x;
         this.targetY = this.y;
+        //Enemy collision to walls and turning
+        if(this.name === 'enemy'){
+            this.handleWallTurning();
+            return;
+        }
     }
     if(this.isMoving) this.moveDir = dir;
 };

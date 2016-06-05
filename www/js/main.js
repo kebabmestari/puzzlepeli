@@ -82,7 +82,8 @@ var gameArea = {
         //Prevent context menu on right click but handle the event
         document.addEventListener('contextmenu', function(e){
             e.preventDefault();
-            var event = document.createEvent('mousedown')
+            var event = document.createEvent('MouseEvents')
+//            event.initMouseEvent();
             event.button = 2;
             gameArea.dispatchEvent(event);
         });
@@ -120,7 +121,7 @@ var gameArea = {
             handleCollisions();
         }
         
-        if(currentMap) {
+        if(currentMap && !editMode) {
             
             var l = currentMap.objects.length;
             
@@ -143,9 +144,10 @@ var gameArea = {
                     draw.drawCenteredText('WIN');
                 }
             }
+    
+            currentMap.clearRemoveList();
         }
         
-        currentMap.clearRemoveList();
 
         gameArea.drawEverything();
         requestAnimationFrame(gameArea.update);

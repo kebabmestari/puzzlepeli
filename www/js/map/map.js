@@ -173,10 +173,10 @@ map.prototype.getMapSize = function(){
 //Return map offsets
 map.prototype.getMapOffsetX = function() {
     return this.mapOffSetX;
-}
+};
 map.prototype.getMapOffsetY = function(){
     return this.mapOffSetY;
-}
+};
 
 /**
  * Draw the map tiles
@@ -419,6 +419,18 @@ map.prototype.loadMap = function(map, tileset){
             case 'key':
                 this.objects.push(
                         new key(obj.x, obj.y));
+                break;
+            case 'enemy1':
+                this.objects.push(
+                        createEnemy(obj.x, obj.y, ENEMYTYPE.BACKANDFORTH));
+                break;
+            case 'enemy2':
+                this.objects.push(
+                        createEnemy(obj.x, obj.y, ENEMYTYPE.BACKANDFORTH, 'up'));
+                break;
+            case 'enemy3':
+                this.objects.push(
+                        createEnemy(obj.x, obj.y, ENEMYTYPE.TURNSRIGHT));
                 break;
             default:
                 console.log('Unidentified object!');

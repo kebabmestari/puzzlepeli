@@ -12,32 +12,35 @@ function playerObj(x, y){
         gameObject.prototype.move.call(this, x, y);
         var l = currentMap.objects.length;
         
-        //Move boxes out of the way
-        for(var i = 0; i < l; i++){
-            var tempObj = currentMap.objects[i];
-            if(tempObj.name !== 'box') continue;
-            if(tempObj.x === this.targetX && tempObj.y === this.targetY){
-                var boxTargetX = tempObj.x, boxTargetY = tempObj.y;
-                switch(this.moveDir){
-                    case 'up':
-                        boxTargetY -= 1;
-                        break;
-                    case 'right':
-                        boxTargetX += 1;
-                        break;
-                    case 'down':
-                        boxTargetY += 1;
-                        break;
-                    case 'left':
-                        boxTargetX -= 1;
-                        break;
-                }
-                if(tempObj.canMoveTo(boxTargetX, boxTargetY)){
-                    tempObj.move(this.moveDir);
-                }else{
-                    this.isMoving = false;
-                    this.targetX = this.x;
-                    this.targetY = this.y;
+        if(this.name === 'enemy' && !this.canMoveBoxes){
+        } else{
+            //Move boxes out of the way
+            for(var i = 0; i < l; i++){
+                var tempObj = currentMap.objects[i];
+                if(tempObj.name !== 'box') continue;
+                if(tempObj.x === this.targetX && tempObj.y === this.targetY){
+                    var boxTargetX = tempObj.x, boxTargetY = tempObj.y;
+                    switch(this.moveDir){
+                        case 'up':
+                            boxTargetY -= 1;
+                            break;
+                        case 'right':
+                            boxTargetX += 1;
+                            break;
+                        case 'down':
+                            boxTargetY += 1;
+                            break;
+                        case 'left':
+                            boxTargetX -= 1;
+                            break;
+                    }
+                    if(tempObj.canMoveTo(boxTargetX, boxTargetY)){
+                        tempObj.move(this.moveDir);
+                    }else{
+                        this.isMoving = false;
+                        this.targetX = this.x;
+                        this.targetY = this.y;
+                    }
                 }
             }
         }
