@@ -14,12 +14,16 @@ var editorEntities = {
     0 : 'bg',
     1 : 'wall',
     2 : 'box',
-    3 : 'playerstart',
-    4 : 'goal',
-    5 : 'door',
-    6 : 'key',
-    7 : 'water',
-    8 : 'enemy1'
+    3 : 'boulder',
+    4 : 'playerstart',
+    5 : 'goal',
+    6 : 'door',
+    7 : 'key',
+    8 : 'water',
+    9 : 'lava',
+    10 : 'enemy1',
+    11 : 'enemy2',
+    12 : 'enemy3'
 };
 
 /**
@@ -73,6 +77,7 @@ function initEditor(){
             });
             gameArea.canvas.addEventListener('mousedown', function(e){
                 mapEditor.mousedown = true;
+                mapEditor.selectTile.call(mapEditor, e || window.event);
             });
             window.addEventListener('mouseup', function(e){
                 mapEditor.mousedown = false;
@@ -152,10 +157,11 @@ function initEditor(){
         },
         //Output map data into popup
         showJSON : function(){
-          this.newMapData = newMap.toMapData();
-          var el = document.getElementById('jsontarget');
-          el.innerHTML = this.createJSON();
-          el.parentNode.style.display = 'block';
+            this.newMapData = newMap.toMapData();
+            var el = document.getElementById('jsontarget');
+            el.innerHTML = this.createJSON();
+            el.parentNode.style.display = 'block';
+            selectText(el);
         },
         //Turn map object into json string
         createJSON : function(){
@@ -196,40 +202,58 @@ function initEditor(){
             if(!this.pickedTile)
                 return;
             var mouseButton = e.button;
+            
             var selection = editorEntities[this.selected];
             if(mouseButton === 2){
                 newMap.removeObjectFrom(this.pickedTile.x, this.pickedTile.y);
                 e.stopPropagation();
+                return false;
+            } else if(mouseButton === 1){
+                var pObj = newMap.getObjectFrom(this.pickedTile.x, this.pickedTile.y);
+                if(pObj)
+                    new objEditBox(pObj);
                 return false;
             }
             //Edit selected tile depending on what is selected
             if(this.pickedTile){
                 switch(selection){
                     case 'bg':
-                        this.pickedTile.type = 0;
+                        this.pickedTile.type = getTileNumber('bg');
                         this.pickedTile.hit = false;
                         break;
                     case 'water':
-                        this.pickedTile.type = 4;
+                        this.pickedTile.type = getTileNumber('water');
+                        this.pickedTile.hit = true;
+                        break;
+                    case 'lava':
+                        this.pickedTile.type = getTileNumber('lava');
+                        this.pickedTile.hit = true;
+                        break;
+                    case 'hole':
+                        this.pickedTile.type = getTileNumber('hole');
                         this.pickedTile.hit = true;
                         break;
                     case 'wall':
-                        this.pickedTile.type = 1;
+                        this.pickedTile.type = getTileNumber('wall');
                         this.pickedTile.hit = true;
                         break;
                     case 'box':
                         newMap.addObject(new box(this.pickedTile.x, this.pickedTile.y));
                         console.log('New box added');
                         break;
+                    case 'boulder':
+                        newMap.addObject(new box(this.pickedTile.x, this.pickedTile.y, false));
+                        console.log('New boulder added');
+                        break;
                     case 'playerstart':
                         newMap.playerStart = [this.pickedTile.x, this.pickedTile.y];
                         break;
                     case 'goal':
-                        this.pickedTile.type = 2;
+                        this.pickedTile.type = getTileNumber('goal');
                         this.pickedTile.hit = false;
                         break;
                     case 'door':
-                        this.pickedTile.type = 3;
+                        this.pickedTile.type = getTileNumber('door');
                         this.pickedTile.hit = true;
                         break;
                     case 'key':
@@ -238,6 +262,14 @@ function initEditor(){
                     case 'enemy1':
                         newMap.addObject(new enemy(this.pickedTile.x, this.pickedTile.y,
                             ENEMYTYPE.BACKANDFORTH));
+                        break;                   
+                    case 'enemy2':
+                        newMap.addObject(new enemy(this.pickedTile.x, this.pickedTile.y,
+                            ENEMYTYPE.BACKANDFORTH, 'up'));
+                        break;                   
+                    case 'enemy3':
+                        newMap.addObject(new enemy(this.pickedTile.x, this.pickedTile.y,
+                            ENEMYTYPE.TURNSRIGHT));
                         break;                   
                 }
             }
@@ -263,7 +295,7 @@ function initEditor(){
             var max = Object.keys(editorEntities).length - 1;
             if(this.selected < 0)
                 this.selected = max;
-            else if(this.selected >= max)
+            else if(this.selected > max)
                 this.selected = 0;
 
             this.updateInfo();

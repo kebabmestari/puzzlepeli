@@ -6,7 +6,26 @@ var ENEMYTYPE = {
 var defEnemySpeed = 1000;
 
 function enemy(x, y, type, initialdir, speed, canmoveboxes){
-    gameObject.call(this, 'player', x, y, 'green', 'E', null);
+    var col = 'green';
+    switch (type) {
+        case ENEMYTYPE.BACKANDFORTH:
+            if(initialdir == 'right' || initialdir == 'left'){
+                col = 'green';
+                this.name = 'enemy1';
+            } else{
+                col = 'lightgreen';
+                this.name = 'enemy2';
+            }
+            break;
+        case ENEMYTYPE.TURNSRIGHT:
+            col = 'lightblue';
+            this.name = 'enemy3';
+            break;
+        default:
+            console.log('Enemy type invalid');
+            break;
+    }
+    gameObject.call(this, 'player', x, y, col, 'E', null);
     
     //Prevents stack overflow/endless loop when stuck
     this.wallTurnsPerUpdate = 0;
@@ -16,6 +35,7 @@ function enemy(x, y, type, initialdir, speed, canmoveboxes){
     
     //Right if not defined
     this.dir = initialdir || 'right';
+    this.moveDir = this.dir;
     this.moveTick = Date.now();
     this.canMoveBoxes = canmoveboxes || false;
     this.speed = speed || defEnemySpeed;
@@ -37,16 +57,16 @@ enemy.prototype.updateMovement = function(){
 enemy.move = function(){
     switch(this.dir){
         case 'right':
-            player.prototype.move.call(this, this.x + 1, this.y);
+            playerObj.prototype.move.call(this, this.x + 1, this.y);
             break;
         case 'left':
-            player.prototype.move.call(this, this.x - 1, this.y);
+            playerObj.prototype.move.call(this, this.x - 1, this.y);
             break;
         case 'up':
-            player.prototype.move.call(this, this.x, this.y - 1);
+            playerObj.prototype.move.call(this, this.x, this.y - 1);
             break;
         case 'down':
-            player.prototype.move.call(this, this.x, this.y + 1);
+            playerObj.prototype.move.call(this, this.x, this.y + 1);
             break;
     }
 }
@@ -113,6 +133,6 @@ function createEnemy(x, y, type, direction){
             initialDir = 'right';
         else
             initialDir = 'right';
-    newEnemy = new enemy(x, y, type || ENEMYTYPE.BACKANDFORTH, initialDir, defEnemySpeed, false);
+    newEnemy = new enemy(x, y, type || ENEMYTYPE.BACKANDFORTH, initialDir, defEnemySpeed, true);
     return newEnemy;
 }

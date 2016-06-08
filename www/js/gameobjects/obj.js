@@ -196,6 +196,13 @@ gameObject.prototype.move = function(dir){
             // statements_def
             break;
     }
+    
+    //If enemy can move boxes handle them
+    if(this.name === 'enemy'){
+        if(this.moveBoxes())
+            return;
+    }
+    
     //Check for walls
     if(currentMap.isHit(this.targetX, this.targetY) || !this.canMoveTo(this.targetX, this.targetY)){
         //Player collision with doors etc

@@ -10,6 +10,12 @@ var gameOn = true;
 //Inventory array
 var inventory = [];
 
+function addScript(src){
+    var newSrc = document.createElement('src');
+    newSrc.setAttribute('src', src);
+    document.body.appendChild(newSrc);
+}
+
 //Main object
 var gameArea = {
     
@@ -38,10 +44,6 @@ var gameArea = {
         CTX.textAlign = "center";
         CTX.strokeText("Loading", this.canvas.getAttribute("width")/2, this.canvas.getAttribute("height")/2);
 
-        var kebab = document.getElementById('testitileset');
-        tiluset = new tilesetObj("testi", kebab, 25, 25);
-        tiluset.addAnimation('water', 4, 2, 500);
-
         player = new playerObj(0,0);
         player.setAnimation(new animation('plranim', 25, 25, 2, 1000));
         
@@ -64,6 +66,7 @@ var gameArea = {
         
         //Game controllers
         window.addEventListener('keydown', handleKeys);
+        window.addEventListener('wheel', handleWheel);
         swipeDetect(window, handleSwipe);
 
         //Prevent dragging on the page

@@ -93,6 +93,23 @@ function handleKeys(event){
 }
 
 /**
+ * Handle mouse wheel scrolling
+ * @param {event} e WheelEvent
+ */
+function handleWheel(e){
+    if(!editMode)
+        return;
+    
+    var tresh = 50;
+    
+    if(e.deltaY >= tresh){
+        mapEditor.scrollItems(-1);
+    } else if(e.deltaY <= -tresh){
+        mapEditor.scrollItems(1);
+    }
+}
+
+/**
  * Swipe callback
  * @param {string} dir Direction into which the swipe happened
  */

@@ -26,9 +26,10 @@ Include the jQuery Mobile library
         
     </head>
     <body>
+        <div class="editbox"><input id="_speed" placeholder="Speed"><input id="_dir" placeholder="Direction"><input id="_type" placeholder="Type"><a class="ruksi">X</a></div>
         <div id="json">
-            <p id="jsontarget">dasdsadsa</p>
-            <a id="ruksi" onclick="this.parentNode.style.display='none'">X</a>
+            <p id="jsontarget"></p>
+            <a class="ruksi" onclick="this.parentNode.style.display='none'">X</a>
         </div>
         <div class="content">
             <h1>Mobiilipeli</h1>
@@ -53,7 +54,6 @@ Include the jQuery Mobile library
             <img src="img/pelaaja.png" id="pelaajakuva">
             <img src="img/avain.png" id="avainkuva">
         </div>
-        <script type="text/javascript" src="map/levels.js"></script>
         <script type="text/javascript" src="cordova.js"></script>
         <script type="text/javascript" src="js/map/map.js"></script>
         <script type="text/javascript" src="js/ajax.js"></script>
@@ -67,6 +67,7 @@ Include the jQuery Mobile library
         <script type="text/javascript" src="js/draw.js"></script>
         <script type="text/javascript" src="js/map/leveledit.js"></script>
         <script type="text/javascript" src="js/control.js"></script>
+        <script type="text/javascript" src="map/levels.js"></script>
         <script type="text/javascript" src="js/main.js"></script>
     </body>
 </html>

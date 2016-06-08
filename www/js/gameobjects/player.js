@@ -8,47 +8,63 @@
 function playerObj(x, y){
     gameObject.call(this, 'player', x, y, 'green', '@', 'pelaajakuva');
 
-    this.move = function(x, y){
-        gameObject.prototype.move.call(this, x, y);
-        var l = currentMap.objects.length;
-        
-        if(this.name === 'enemy' && !this.canMoveBoxes){
-        } else{
-            //Move boxes out of the way
-            for(var i = 0; i < l; i++){
-                var tempObj = currentMap.objects[i];
-                if(tempObj.name !== 'box') continue;
-                if(tempObj.x === this.targetX && tempObj.y === this.targetY){
-                    var boxTargetX = tempObj.x, boxTargetY = tempObj.y;
-                    switch(this.moveDir){
-                        case 'up':
-                            boxTargetY -= 1;
-                            break;
-                        case 'right':
-                            boxTargetX += 1;
-                            break;
-                        case 'down':
-                            boxTargetY += 1;
-                            break;
-                        case 'left':
-                            boxTargetX -= 1;
-                            break;
-                    }
-                    if(tempObj.canMoveTo(boxTargetX, boxTargetY)){
-                        tempObj.move(this.moveDir);
-                    }else{
-                        this.isMoving = false;
-                        this.targetX = this.x;
-                        this.targetY = this.y;
-                    }
-                }
-            }
-        }
-    };
-
     console.log('Player created at ' + x + ',' + y);
 }
 playerObj.prototype = Object.create(gameObject.prototype);
+
+playerObj.prototype.move = function(x, y){
+    
+    gameObject.prototype.move.call(this, x, y);
+
+    if(this.name === 'player')
+        this.moveBoxes();
+
+};
+/**
+ * Move boxes out of the way
+ * @returns {undefined}
+ */
+playerObj.prototype.moveBoxes = function(){
+    
+    var l = currentMap.objects.length;
+    
+    if(this.name === 'enemy' && !this.canMoveBoxes){
+    } else{
+        //Move boxes out of the way
+        for(var i = 0; i < l; i++){
+            var tempObj = currentMap.objects[i];
+            if(tempObj.name !== 'box') continue;
+            if(tempObj.x === this.targetX && tempObj.y === this.targetY){
+                var boxTargetX = tempObj.x, boxTargetY = tempObj.y;
+                switch(this.moveDir){
+                    case 'up':
+                        boxTargetY -= 1;
+                        break;
+                    case 'right':
+                        boxTargetX += 1;
+                        break;
+                    case 'down':
+                        boxTargetY += 1;
+                        break;
+                    case 'left':
+                        boxTargetX -= 1;
+                        break;
+                }
+                if(tempObj.canMoveTo(boxTargetX, boxTargetY)){
+                    tempObj.move(this.moveDir);
+                    return true;
+                }else{
+                    if(this.name === 'enemy')
+                        return false;
+                    this.isMoving = false;
+                    this.targetX = this.x;
+                    this.targetY = this.y;
+                }
+            }
+        }
+    }
+    return false;
+};
 
 //Handle special wall collisions like doors
 playerObj.prototype.checkWallCollision = function(x, y){

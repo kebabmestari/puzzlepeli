@@ -7,7 +7,6 @@
 ///Current map object
 var currentMap = null;
 var tiluset = null;
-var defaultTileset = 'testi';
 //Array of tilesets
 var tilesetList = [];
 //Box count
@@ -21,13 +20,18 @@ var TILETYPE = {
     3   : 'DOOR',
     4   : 'WATER',
     5   : 'WATER2',
-    6   : 'SUNKENBOX'
+    6   : 'SUNKENBOX',
+    7   : 'LAVA',
+    8   : 'LAVA2',
+    9   : 'BOULDER',
+    10   : 'HOLE',
+    11   : 'FILLEDHOLE',
 };
 
-var TILETYPE2 = {}
+var TILETYPE2 = {};
 
 //Create a tile lookup table so you don't have to spend time at it every time
-var _createTileL = (function createTileLookupTable(){
+(function(){
     for(var i = 0, t= Object.keys(TILETYPE); i < t.length; i++){
         TILETYPE2[TILETYPE[i]] = i;
     }
@@ -39,6 +43,7 @@ var _createTileL = (function createTileLookupTable(){
  * @returns {number} number of the tile (on the tileset)
  */
 function getTileNumber(name){
+    name = name.toUpperCase();
     if(TILETYPE2[name])
         return TILETYPE2[name];
     else
@@ -330,18 +335,30 @@ map.prototype.addObject = function(obj){
 }
 
 /**
+ * Get first object from coordinates
+ * @param {number} x
+ * @param {number} y
+ * @returns {gameObject}
+ */
+map.prototype.getObjectFrom = function(x, y){
+    for(var i = 0; i < this.objects.length; i++){
+        var tempObj = this.objects[i];
+        if(tempObj.x === x && tempObj.y === y){
+            return tempObj;
+        }
+    }
+    return null;
+}
+
+/**
  * Removes an object from the given coordinates
  * @param {number} x
  * @param {number} y
  */
 map.prototype.removeObjectFrom = function(x, y){
-    for(var i = 0; i < this.objects.length; i++){
-        var tempObj = this.objects[i];
-        if(tempObj.x === x && tempObj.y === y){
-            this.removeObject(tempObj);
-            return;
-        }
-    }
+    var obj = null;
+    if(obj = (this.getObjectFrom(x, y)) !== null)
+        this.removeObject(obj);
 }
 
 /**
@@ -414,7 +431,7 @@ map.prototype.loadMap = function(map, tileset){
         switch (obj.name) {
             case 'box':
                 this.objects.push(
-                        new box(obj.x, obj.y) );
+                        new box(obj.x, obj.y, obj.countsOnGoal) );
                 break;
             case 'key':
                 this.objects.push(
@@ -602,7 +619,7 @@ function mapData(name, tileset, tiles, hitmap, plrstart, objects, requiredboxes)
     this.objects = objects || [];
     var boxcount = 0;
     for(var o in objects)
-        if(o.name && o.name === 'box') boxcount++;
+        if(o.name && o.name === 'box' && o.countsOnGoal) boxcount++;
     this.requiredBoxes = requiredboxes || boxcount;
     console.log('Map ' + name + ' with tileset ' + tileset + ' created');
 }

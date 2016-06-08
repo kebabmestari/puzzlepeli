@@ -93,3 +93,59 @@ function handleCollisions(){
         }
     }
 }
+
+/**
+ * Select text in element
+ * @param {element} el DOM element
+ */
+function selectText(el) {
+    win = window;
+    var doc = win.document, sel, range;
+    if (win.getSelection && doc.createRange) {
+        sel = win.getSelection();
+        range = doc.createRange();
+        range.selectNodeContents(el);
+        sel.removeAllRanges();
+        sel.addRange(range);
+    } else if (doc.body.createTextRange) {
+        range = doc.body.createTextRange();
+        range.moveToElementText(el);
+        range.select();
+    }
+}
+
+/**
+ * Constructor for editbox in level editor
+ */
+function objEditBox(obj){
+    if(typeof obj !== 'object')
+        throw 'Invalid object given to objEditBox';
+    this.parent = obj;
+    var masterBox = document.getElementsByClassName('editbox')[0];
+    this.elem = masterBox.cloneNode(true);
+    this.elem.style.display = 'block';
+    var pos = newMap.getTileScreenPos(obj.x, obj.y);
+    this.elem.style.left = pos.x;
+    this.elem.style.top = pos.y;
+    document.body.appendChild(this.elem);
+    
+    var ee = this;
+    
+    //Close box
+    this.elem.lastChild.addEventListener('click', function(){
+        ee.elem.style.display = 'none';
+        ee.elem.parentNode.removeChild(ee.elem);
+    });
+    
+    if(obj.name === 'enemy'){
+        this.elem.childNodes[0].addEventListener('keyup', function(){
+            ee.obj.speed = this.val; 
+        });
+        this.elem.childNodes[1].addEventListener('keyup', function(){
+            ee.obj.dir = this.val; 
+        });
+        this.elem.childNodes[0].addEventListener('keyup', function(){
+            ee.obj.type = this.val; 
+        });
+    }
+}

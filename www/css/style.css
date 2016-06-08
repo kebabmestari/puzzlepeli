@@ -42,10 +42,26 @@ canvas{
     width: 50%;
     max-height: 400px;
     overflow-y: scroll;
+    overflow-x: hidden;
+    word-wrap: normal;
     top: 0px;
 }
 
-#ruksi{
+.editbox{
+    z-index: 100;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    display: none;
+    width: 100px;
+    background-color: black;
+}
+
+.editbox>input{
+    width: 80%;
+}
+
+.ruksi{
     position: absolute;
     color: red;
     top: 0px;
